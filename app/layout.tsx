@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, DM_Sans } from 'next/font/google';
-import Footer from './components/Footer';
-import GoogleAnalytics from './components/GoogleAnalytics'; // <--- ÚJ
-import CookieBanner from './components/CookieBanner';       // <--- ÚJ
+import Script from 'next/script';
 import './globals.css';
 
-// Font optimalizálás
+// --- 1. KOMPONENSEK IMPORTÁLÁSA ---
+// Ellenőrizd, hogy a fájlnevek pontosan egyeznek-e (kis/nagybetű)!
+//import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import CookieBanner from './components/CookieBanner'; // Opcionális: Ha akarod, hogy mindenhol ott legyen
+
 const playfair = Playfair_Display({ 
   subsets: ['latin'], 
   variable: '--font-playfair',
@@ -18,20 +21,20 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Duomo di Milano Tickets | Skip The Line & Terraces',
-  description: 'Book official Duomo di Milano tickets. Instant mobile delivery, skip-the-line access to the Cathedral, Rooftop Terraces (Lift/Stairs), and Museum.',
-  keywords: ['Duomo di Milano tickets', 'Milan Cathedral entry', 'Duomo terraces lift', 'Milan museum entry', 'Skip the line Duomo'],
+  title: 'Guggenheim Bilbao Tickets | Skip The Line Entry',
+  description: 'Book official Guggenheim Museum Bilbao tickets. Instant mobile delivery, skip-the-line access, and visitor guide. Experience Frank Gehry\'s masterpiece.',
+  keywords: ['Guggenheim Bilbao tickets', 'Bilbao museum entry', 'Guggenheim skip the line', 'Frank Gehry architecture'],
   openGraph: {
-    title: 'Duomo di Milano Tickets | Official Access',
-    description: 'Experience the majesty of Milan\'s Cathedral. Book your tickets for the Cathedral, Terraces, and Museum now.',
+    title: 'Guggenheim Bilbao Tickets | Skip The Line',
+    description: 'Experience the Titanium Masterpiece. Book your tickets now.',
     type: 'website',
     locale: 'en_US',
     images: [
       {
-        url: 'https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg',
+        url: 'https://res.cloudinary.com/dldgqjxkn/image/upload/v1765748488/el-edificio-guggenheim-bilbao-1_nursre.jpg',
         width: 1200,
         height: 630,
-        alt: 'Duomo di Milano',
+        alt: 'Guggenheim Museum Bilbao',
       },
     ],
   },
@@ -48,21 +51,42 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} ${dmSans.variable} font-sans bg-[#FAFAF9] text-[#1C1917] antialiased`}>
+      {/* --- 2. STICKY FOOTER BEÁLLÍTÁS ---
+         flex flex-col min-h-screen: Biztosítja, hogy az oldal kitöltse a képernyőt,
+         és a footer alul maradjon akkor is, ha kevés a tartalom.
+      */}
+      <body className={`${playfair.variable} ${dmSans.variable} font-sans bg-[#FAFAF9] text-[#1C1917] antialiased flex flex-col min-h-screen`}>
         
-        {/* --- GOOGLE ANALYTICS & ADS (CONSENT MODE) --- */}
-        {/* Cseréld le a kódot a sajátodra! */}
-        <GoogleAnalytics GA_MEASUREMENT_ID="AW-XXXXXXXXX" />
+        {/* --- GOOGLE SCRIPTS --- */}
+        <Script
+            src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"
+            strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+            {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', 'AW-XXXXXXXXX');
+            `}
+        </Script>
 
-        {/* FŐ TARTALOM */}
-        {children}
+        {/* --- NAVBAR  nem kell ez nekem--- */}
+        
 
-        {/* LÁBLÉC */}
+        {/* --- FŐ TARTALOM --- */}
+        {/* A flex-grow tolja le a footert, ha üres hely van */}
+        <main className="flex-grow">
+          {children}
+        </main>
+
+        {/* --- FOOTER --- */}
         <Footer />
-
-        {/* COOKIE BANNER (Mindig a legtetején rétegben) */}
-        <CookieBanner />
         
+        {/* Opcionális: Cookie Banner (a layout szintjén szokás kezelni) */}
+        <CookieBanner />
+
       </body>
     </html>
   );

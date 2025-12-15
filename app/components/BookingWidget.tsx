@@ -1,7 +1,7 @@
-'use client';
+'use client'; // Fontos!
 
-import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase'; 
 import { 
   Minus, Plus, ArrowRight, Check, Calendar, AlertCircle, Info, 
@@ -14,12 +14,8 @@ const TICKET_VARIANTS = [
   { id: 'duomo', name: 'Duomo + Museum', desc: 'Cathedral Access Only (No Terraces)', price: 15, reduced: 8, highlight: null },
 ];
 
-// --- 1. A BELSŐ LOGIKA (A korábbi kódod ide került) ---
-function BookingWidgetContent() {
+export default function BookingWidget() {
   const router = useRouter();
-  // Itt biztonságosan használható a searchParams, ha a jövőben kell
-  const searchParams = useSearchParams(); 
-  
   const [step, setStep] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(TICKET_VARIANTS[0]);
   
@@ -58,7 +54,7 @@ function BookingWidgetContent() {
     return `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
-  // --- NAPTÁR LOGIKA ---
+  // --- NAPTÁR LOGIKA (BŐVÍTVE) ---
   const getDayStatus = (day: number) => {
     const dateStr = getDateString(day);
     const rule = availabilityRules.find(r => r.blocked_date === dateStr);
@@ -117,6 +113,7 @@ function BookingWidgetContent() {
         const result = await response.json();
 
         if (result.success) {
+            // ÁTIRÁNYÍTÁS A THANK YOU PAGE-RE (Query paraméterekkel a Google Adsnek)
             router.push(`/thank-you?orderId=${result.orderId}&total=${total}&currency=EUR`);
         } else {
             alert("Hiba történt. Kérjük próbáld újra.");
@@ -178,7 +175,7 @@ function BookingWidgetContent() {
             </div>
           )}
 
-          {/* STEP 2 */}
+          {/* STEP 2 (OKOS NAPTÁR SÁRGA PÖTTYEL) */}
           {step === 2 && (
             <div key="step2" className="step-animation">
               <div className="bg-stone-50 p-3 rounded-xl border border-stone-100 mb-4">
@@ -204,7 +201,7 @@ function BookingWidgetContent() {
                         className={`aspect-square rounded-lg text-sm flex items-center justify-center transition-all duration-200 border relative ${btnClass}`}
                       >
                         {day}
-                        {/* SÁRGA PÖTTY */}
+                        {/* SÁRGA PÖTTY HA KEVÉS A HELY */}
                         {status === 'low' && !isDisabled && !isSelected && (
                             <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-500 rounded-full pulse-dot"></span>
                         )}
@@ -249,7 +246,7 @@ function BookingWidgetContent() {
             </div>
           )}
 
-          {/* STEP 3 */}
+          {/* STEP 3 & 4 */}
           {step === 3 && (
             <div key="step3" className="step-animation space-y-6">
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-6 flex items-center gap-4">
@@ -267,7 +264,6 @@ function BookingWidgetContent() {
             </div>
           )}
 
-          {/* STEP 4 */}
           {step === 4 && (
             <div key="step4" className="step-animation space-y-4">
                 <div className="bg-[#B8860B]/10 p-4 rounded-xl flex gap-3 items-start mb-4 border border-[#B8860B]/20"><AlertCircle size={18} className="text-[#B8860B] flex-shrink-0 mt-0.5"/><p className="text-xs text-stone-700 leading-relaxed">Please enter the <strong>Lead Traveler's</strong> details. Tickets will be sent to this email address instantly.</p></div>
@@ -295,18 +291,5 @@ function BookingWidgetContent() {
       </div>
     </div>
     </>
-  );
-}
-
-// --- 2. A CSOMAGOLÁS (Suspense Boundary) ---
-export default function BookingWidget() {
-  return (
-    <Suspense fallback={
-        <div className="bg-white w-full rounded-3xl shadow-2xl h-[400px] flex items-center justify-center border border-stone-100">
-            <Loader2 className="animate-spin text-[#B8860B]" size={32} />
-        </div>
-    }>
-      <BookingWidgetContent />
-    </Suspense>
   );
 }

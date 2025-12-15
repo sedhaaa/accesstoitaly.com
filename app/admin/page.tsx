@@ -1,5 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+// 1. Importáld a Suspense-t
+import { useEffect, useState, Suspense } from 'react'; 
 import { supabase } from '@/lib/supabase';
 import { 
   Search, Calendar, Trash2, Plus, Filter, 
@@ -33,7 +35,9 @@ type AvailabilityRule = {
 
 const STANDARD_TIMES = ["09:00", "09:30", "10:00", "10:30", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-export default function AdminPage() {
+// 2. A régi 'AdminPage' logikáját átnevezzük 'AdminContent'-re
+// Ez a komponens tartalmazza az ÖSSZES eddigi logikádat változatlanul
+function AdminContent() {
   // Auth State
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -53,11 +57,10 @@ export default function AdminPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // ALAPÉRTELMEZETTEN A FULL DAY MOST FALSE
   const [editingRule, setEditingRule] = useState<AvailabilityRule>({
     blocked_date: '',
     ticket_type: 'all',
-    is_full_day_blocked: false, // JAVÍTVA: Nem pipált alapból
+    is_full_day_blocked: false,
     blocked_times: []
   });
 
@@ -128,7 +131,7 @@ export default function AdminPage() {
         setEditingRule({
             blocked_date: dateStr,
             ticket_type: 'all',
-            is_full_day_blocked: false, // JAVÍTVA: Itt is alapból false
+            is_full_day_blocked: false,
             blocked_times: []
         });
     }
@@ -179,60 +182,39 @@ export default function AdminPage() {
     fetchData();
   };
 
-  // --- RENDER: LOGIN SCREEN (ENGLISH) ---
+  // --- RENDER LOGIC ---
   if (authLoading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-[#B8860B]"><div className="animate-spin text-4xl">❖</div></div>;
 
   if (!session) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
-        {/* CSS INJECTION FOR LOGIN ANIMATION */}
         <style jsx global>{`
             @keyframes fadeInZoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
             .anim-login { animation: fadeInZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         `}</style>
-
-        {/* Background Effect */}
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] to-[#000000] z-0"></div>
-        
         <div className="bg-[#111]/80 backdrop-blur-xl border border-white/10 p-10 rounded-3xl w-full max-w-md shadow-2xl relative z-10 anim-login">
             <div className="text-center mb-8">
                 <Shield className="mx-auto text-[#B8860B] mb-4" size={48} />
                 <h1 className="text-3xl font-serif font-bold text-white tracking-widest uppercase">Access<span className="text-[#B8860B]">To</span>Italy</h1>
                 <p className="text-xs text-stone-500 mt-2 uppercase tracking-[0.3em]">Restricted Access</p>
             </div>
-
             <form onSubmit={handleLogin} className="space-y-5">
                 <div>
                     <label className="text-xs font-bold text-stone-400 uppercase ml-1">Email Address</label>
                     <div className="relative mt-1">
                         <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" size={18}/>
-                        <input 
-                            type="email" 
-                            required
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                            className="w-full bg-black/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#B8860B] transition-all"
-                            placeholder="admin@access.com"
-                        />
+                        <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#B8860B] transition-all" placeholder="admin@access.com"/>
                     </div>
                 </div>
                 <div>
                     <label className="text-xs font-bold text-stone-400 uppercase ml-1">Password</label>
                     <div className="relative mt-1">
                         <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" size={18}/>
-                        <input 
-                            type="password" 
-                            required
-                            value={loginPass}
-                            onChange={(e) => setLoginPass(e.target.value)}
-                            className="w-full bg-black/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#B8860B] transition-all"
-                            placeholder="••••••••"
-                        />
+                        <input type="password" required value={loginPass} onChange={(e) => setLoginPass(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#B8860B] transition-all" placeholder="••••••••"/>
                     </div>
                 </div>
-
                 {loginError && <p className="text-red-500 text-xs text-center">{loginError}</p>}
-
                 <button type="submit" className="w-full bg-gradient-to-r from-[#B8860B] to-[#9a7009] text-white font-bold py-4 rounded-xl uppercase tracking-wider shadow-lg hover:shadow-[#B8860B]/20 transition-all active:scale-[0.98]">
                     Enter Dashboard
                 </button>
@@ -242,10 +224,9 @@ export default function AdminPage() {
     );
   }
 
-  // --- RENDER: ADMIN DASHBOARD (MAGYAR) ---
+  // --- A Dashboard UI ---
   return (
     <>
-    {/* CSS ANIMÁCIÓK ÉS STÍLUSOK */}
     <style jsx global>{`
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -254,10 +235,7 @@ export default function AdminPage() {
         .anim-fade { animation: fadeIn 0.4s ease-out forwards; }
         .anim-right { animation: slideRight 0.4s ease-out forwards; }
     `}</style>
-
     <div className="min-h-screen bg-[#050505] text-stone-200 font-sans selection:bg-[#B8860B] selection:text-white pb-20">
-      
-      {/* HEADER */}
       <header className="bg-[#111]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/5 px-6 py-4 flex justify-between items-center shadow-2xl">
         <div className="flex items-center gap-3">
             <Shield className="text-[#B8860B]" size={28}/>
@@ -273,18 +251,13 @@ export default function AdminPage() {
             <button onClick={handleLogout} className="p-2 text-stone-500 hover:text-red-500 transition"><LogOut size={20}/></button>
         </div>
       </header>
-
-      {/* MOBIL TAB VÁLTÓ */}
       <div className="md:hidden px-6 mt-4">
         <div className="flex bg-black/40 p-1 rounded-lg border border-white/10 w-full">
             <button onClick={() => setActiveTab('orders')} className={`flex-1 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'orders' ? 'bg-[#B8860B] text-white' : 'text-stone-500'}`}>Rendelések</button>
             <button onClick={() => setActiveTab('availability')} className={`flex-1 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'availability' ? 'bg-[#B8860B] text-white' : 'text-stone-500'}`}>Naptár</button>
         </div>
       </div>
-
       <main className="max-w-7xl mx-auto px-6 mt-8">
-        
-        {/* --- ORDERS TAB (MAGYAR) --- */}
         {activeTab === 'orders' && (
             <div className="space-y-6 anim-up">
                 <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -298,22 +271,13 @@ export default function AdminPage() {
                             <p className="text-2xl font-serif text-[#B8860B]">€{orders.reduce((acc, o) => acc + o.total_price, 0)}</p>
                         </div>
                     </div>
-                    
-                    {/* JAVÍTOTT KERESŐ MEZŐ (FLEXBOX) */}
                     <div className="relative flex-grow max-w-md">
                         <div className="w-full bg-[#111] border border-white/10 rounded-xl flex items-center px-4 py-3 shadow-lg focus-within:border-[#B8860B] transition-all">
                             <Search className="text-stone-500 mr-3 flex-shrink-0" size={20}/>
-                            <input 
-                                type="text" 
-                                placeholder="Keresés név, email vagy telefon alapján..." 
-                                value={searchQuery} 
-                                onChange={(e) => setSearchQuery(e.target.value)} 
-                                className="bg-transparent border-none outline-none text-white w-full placeholder:text-stone-600"
-                            />
+                            <input type="text" placeholder="Keresés név, email vagy telefon alapján..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none outline-none text-white w-full placeholder:text-stone-600"/>
                         </div>
                     </div>
                 </div>
-
                 <div className="grid grid-cols-1 gap-4">
                     {orders.filter(o => o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_email.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_phone.includes(searchQuery)).map((order) => (
                         <div key={order.id} className="bg-[#111] hover:bg-[#161616] transition-all p-6 rounded-xl border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden shadow-md hover:shadow-xl hover:border-white/10 group">
@@ -332,8 +296,6 @@ export default function AdminPage() {
                 </div>
             </div>
         )}
-
-        {/* --- AVAILABILITY TAB (MAGYAR) --- */}
         {activeTab === 'availability' && (
             <div className="anim-right max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8 bg-[#111] p-4 rounded-xl border border-white/10 shadow-lg">
@@ -364,15 +326,12 @@ export default function AdminPage() {
             </div>
         )}
       </main>
-
-      {/* EDIT MODAL (MAGYAR) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm anim-fade">
             <div className="bg-[#111] w-full max-w-lg rounded-2xl border border-[#B8860B]/30 shadow-[0_0_50px_rgba(184,134,11,0.15)] p-6 relative anim-up">
                 <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-stone-500 hover:text-white transition"><X size={24}/></button>
                 <h3 className="text-xl font-serif font-bold text-white mb-1">Elérhetőség Kezelése</h3>
                 <p className="text-sm text-[#B8860B] mb-6 font-bold uppercase tracking-wider">{selectedDate}</p>
-
                 <div className="space-y-6">
                     <div className="flex items-center justify-between bg-black/40 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
                         <div className="flex items-center gap-3">
@@ -381,7 +340,6 @@ export default function AdminPage() {
                         </div>
                         <input type="checkbox" className="w-5 h-5 accent-[#B8860B] cursor-pointer" checked={editingRule.is_full_day_blocked} onChange={(e) => setEditingRule({...editingRule, is_full_day_blocked: e.target.checked})}/>
                     </div>
-
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-stone-400 uppercase">Érintett Termék</label>
                         <select value={editingRule.ticket_type} onChange={(e) => setEditingRule({...editingRule, ticket_type: e.target.value})} className="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-[#B8860B] focus:outline-none appearance-none">
@@ -391,26 +349,18 @@ export default function AdminPage() {
                             <option value="duomo">Csak Dóm Belépő</option>
                         </select>
                     </div>
-
                     <div className={`space-y-2 transition-opacity duration-300 ${editingRule.is_full_day_blocked ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                         <label className="text-xs font-bold text-stone-400 uppercase">Lezárt Idősávok</label>
                         <div className="grid grid-cols-4 gap-2">
                             {STANDARD_TIMES.map(time => {
                                 const isBlocked = editingRule.blocked_times?.includes(time);
                                 return (
-                                    <button 
-                                        key={time}
-                                        onClick={() => toggleTimeSlot(time)}
-                                        className={`py-2 text-xs font-bold rounded-lg border transition-all duration-200 ${isBlocked ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-black/30 text-stone-400 border-white/10 hover:border-[#B8860B] hover:text-white'}`}
-                                    >
-                                        {time}
-                                    </button>
+                                    <button key={time} onClick={() => toggleTimeSlot(time)} className={`py-2 text-xs font-bold rounded-lg border transition-all duration-200 ${isBlocked ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-black/30 text-stone-400 border-white/10 hover:border-[#B8860B] hover:text-white'}`}>{time}</button>
                                 )
                             })}
                         </div>
                         <p className="text-[10px] text-stone-500 text-center mt-2">Kattints az időpontra a lezáráshoz/feloldáshoz.</p>
                     </div>
-
                     <div className="flex gap-3 pt-4 border-t border-white/10">
                         <button onClick={deleteCurrentRule} className="flex-1 bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-2"><Trash2 size={16}/> Törlés</button>
                         <button onClick={saveRule} className="flex-[2] bg-[#B8860B] hover:bg-[#9a7009] text-white py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition shadow-lg flex items-center justify-center gap-2"><Save size={16}/> Mentés</button>
@@ -421,5 +371,19 @@ export default function AdminPage() {
       )}
     </div>
     </>
+  );
+}
+
+// 3. EZ AZ ÚJ EXPORT! 
+// Ez becsomagolja a fenti logikát egy Suspense-be, hogy a Next.js ne panaszkodjon
+export default function AdminPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-[#B8860B]">
+        <div className="animate-spin text-4xl">❖</div>
+      </div>
+    }>
+      <AdminContent />
+    </Suspense>
   );
 }
