@@ -2,33 +2,36 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
 import { 
   ArrowLeft, Mail, MessageSquare, Clock, 
   ChevronDown, ChevronUp, Send, CheckCircle, MapPin 
 } from 'lucide-react';
 
 export default function ContactPage() {
+  const t = useTranslations('Contact');
+  const locale = useLocale();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
-  // FAQ Adatok
+  // FAQ Adatok - Most már a fordításokból jönnek
   const faqs = [
     {
-      question: "I haven't received my tickets yet.",
-      answer: "Tickets are usually sent instantly, but can take up to 10 minutes. Please check your Spam/Junk folder. If you still can't find them, please provide your Order ID in the form, and we will resend them immediately."
+      question: t('faq_1_q'),
+      answer: t('faq_1_a')
     },
     {
-      question: "Can I cancel or reschedule my booking?",
-      answer: "Yes. You can cancel for a full refund or reschedule up to 24 hours before your visit time. Requests made within 24 hours of the visit are non-refundable."
+      question: t('faq_2_q'),
+      answer: t('faq_2_a')
     },
     {
-      question: "What is the dress code?",
-      answer: "Shoulders and knees must be covered for both men and women. This is strictly enforced by cathedral security. You may be denied entry without refund if you do not comply."
+      question: t('faq_3_q'),
+      answer: t('faq_3_a')
     },
     {
-      question: "Do I need to print my tickets?",
-      answer: "No. You can show the QR code directly from your smartphone at the entrance turnstiles."
+      question: t('faq_4_q'),
+      answer: t('faq_4_a')
     }
   ];
 
@@ -52,13 +55,13 @@ export default function ContactPage() {
       
       {/* HEADER */}
       <div className="max-w-6xl mx-auto px-6 mb-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-[#B8860B] font-bold text-xs uppercase tracking-widest hover:text-[#9a7009] transition-colors mb-8">
-            <ArrowLeft size={16} /> Back to Home
+        <Link href={`/${locale}`} className="inline-flex items-center gap-2 text-[#B8860B] font-bold text-xs uppercase tracking-widest hover:text-[#9a7009] transition-colors mb-8">
+            <ArrowLeft size={16} /> {t('back_home')}
         </Link>
-        <h1 className="font-serif text-4xl md:text-5xl mb-4 text-[#1a1a1a]">Contact Support</h1>
+        <h1 className="font-serif text-4xl md:text-5xl mb-4 text-[#1a1a1a]">{t('title')}</h1>
         <p className="text-stone-500 text-lg max-w-2xl">
-          Have a question about your booking? We're here to help. <br/>
-          Check our FAQ below for instant answers.
+          {t('subtitle_1')} <br/>
+          {t('subtitle_2')}
         </p>
       </div>
 
@@ -73,36 +76,36 @@ export default function ContactPage() {
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
                             <CheckCircle size={40} />
                         </div>
-                        <h3 className="font-serif text-2xl font-bold mb-2">Message Sent!</h3>
-                        <p className="text-stone-500">We'll get back to you shortly.</p>
+                        <h3 className="font-serif text-2xl font-bold mb-2">{t('form_success_title')}</h3>
+                        <p className="text-stone-500">{t('form_success_desc')}</p>
                         <button 
                             onClick={() => setIsSent(false)} 
                             className="mt-6 text-[#B8860B] font-bold text-sm uppercase tracking-wider hover:underline"
                         >
-                            Send another message
+                            {t('form_send_another')}
                         </button>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-stone-500">Full Name</label>
-                                <input required type="text" placeholder="John Doe" className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
+                                <label className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('label_name')}</label>
+                                <input required type="text" placeholder={t('placeholder_name')} className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-stone-500">Order ID (Optional)</label>
-                                <input type="text" placeholder="#12345678" className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
+                                <label className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('label_order')}</label>
+                                <input type="text" placeholder={t('placeholder_order')} className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-wider text-stone-500">Email Address</label>
-                            <input required type="email" placeholder="john@example.com" className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
+                            <label className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('label_email')}</label>
+                            <input required type="email" placeholder={t('placeholder_email')} className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors" />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-wider text-stone-500">Message</label>
-                            <textarea required rows={5} placeholder="How can we help you?" className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors resize-none"></textarea>
+                            <label className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('label_message')}</label>
+                            <textarea required rows={5} placeholder={t('placeholder_message')} className="w-full bg-[#FAFAF9] border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#B8860B] transition-colors resize-none"></textarea>
                         </div>
 
                         <button 
@@ -110,7 +113,7 @@ export default function ContactPage() {
                             disabled={isSubmitting}
                             className="w-full bg-[#1a1a1a] text-white font-bold py-4 rounded-xl uppercase tracking-wider text-xs hover:bg-[#B8860B] transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {isSubmitting ? 'Sending...' : <>Send Message <Send size={16}/></>}
+                            {isSubmitting ? t('btn_sending') : <>{t('btn_send')} <Send size={16}/></>}
                         </button>
                     </form>
                 )}
@@ -123,7 +126,7 @@ export default function ContactPage() {
                         <Mail size={24} />
                     </div>
                     <div>
-                        <p className="text-[10px] uppercase tracking-widest opacity-60 font-bold">Email Us</p>
+                        <p className="text-[10px] uppercase tracking-widest opacity-60 font-bold">{t('info_email_title')}</p>
                         <a href="mailto:info@accesstoitaly.com" className="font-bold hover:text-[#B8860B] transition-colors">info@accesstoitaly.com</a>
                     </div>
                 </div>
@@ -132,8 +135,8 @@ export default function ContactPage() {
                         <Clock size={24} />
                     </div>
                     <div>
-                        <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Response Time</p>
-                        <p className="font-bold text-[#1a1a1a]">Within 24 Hours</p>
+                        <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">{t('info_response_title')}</p>
+                        <p className="font-bold text-[#1a1a1a]">{t('info_response_text')}</p>
                     </div>
                 </div>
             </div>
@@ -146,7 +149,7 @@ export default function ContactPage() {
             {/* FAQ SECTION */}
             <div>
                 <h3 className="font-serif text-2xl text-[#1a1a1a] mb-6 flex items-center gap-3">
-                    <MessageSquare className="text-[#B8860B]" size={24}/> Frequently Asked
+                    <MessageSquare className="text-[#B8860B]" size={24}/> {t('faq_title')}
                 </h3>
                 <div className="space-y-4">
                     {faqs.map((faq, index) => (
@@ -168,7 +171,7 @@ export default function ContactPage() {
 
             {/* COMPANY INFO */}
             <div className="bg-[#f9f9f9] p-8 rounded-2xl border border-stone-100">
-                <h4 className="font-bold uppercase tracking-widest text-xs text-[#1a1a1a] mb-4">Office Address</h4>
+                <h4 className="font-bold uppercase tracking-widest text-xs text-[#1a1a1a] mb-4">{t('office_title')}</h4>
                 <div className="flex items-start gap-3 text-sm text-stone-600 mb-6">
                     <MapPin className="text-[#B8860B] flex-shrink-0 mt-0.5" size={18} />
                     <p>
@@ -178,7 +181,7 @@ export default function ContactPage() {
                     </p>
                 </div>
                 <p className="text-xs text-stone-400 leading-relaxed">
-                    Please note: This address is for administrative purposes only. No tickets are sold at this location.
+                    {t('office_note')}
                 </p>
             </div>
 

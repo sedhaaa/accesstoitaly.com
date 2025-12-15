@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl'; // FORDÍTÓ IMPORT
 import { 
   CheckCircle, Home, Mail, QrCode, ShieldCheck 
 } from 'lucide-react';
@@ -20,7 +21,7 @@ function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, tota
         console.log('Firing Google Ads Conversion (First time):', orderId);
         
         (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- SAJÁT ID IDE
+            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- SAJÁT ID IDE (FONTOS!)
             'value': parseFloat(total),
             'currency': currency,
             'transaction_id': orderId
@@ -35,6 +36,7 @@ function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, tota
 }
 
 function ThankYouContent() {
+  const t = useTranslations('ThankYou'); // Betöltjük a 'ThankYou' névteret
   const searchParams = useSearchParams();
   const rawId = searchParams.get('orderId') || 'UNKNOWN';
   const total = searchParams.get('total') || '0';
@@ -74,8 +76,8 @@ function ThankYouContent() {
                 <CheckCircle size={32} className="text-green-500 md:w-10 md:h-10" />
             </div>
             
-            <h1 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 tracking-wide">Payment Successful</h1>
-            <p className="text-xs md:text-sm text-stone-400">Your booking is confirmed.</p>
+            <h1 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 tracking-wide">{t('title')}</h1>
+            <p className="text-xs md:text-sm text-stone-400">{t('subtitle')}</p>
         </div>
 
         {/* JEGY RÉSZLETEK */}
@@ -87,15 +89,14 @@ function ThankYouContent() {
                 <div className="w-6 h-6 bg-[#050505] rounded-full -mr-7 border-l border-white/10"></div>
             </div>
 
-            {/* ADATOK (Order ID & Total - JAVÍTVA A WIDGET STÍLUSÁRA) */}
+            {/* ADATOK */}
             <div className="flex justify-between items-start mb-6 md:mb-8 mt-2">
                 <div>
-                    <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">Order Number</p>
+                    <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">{t('order_number')}</p>
                     <p className="text-xl md:text-2xl font-mono font-bold text-[#B8860B] tracking-wider">#{numericOrderId}</p>
                 </div>
                 <div className="text-right">
-                    <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">Total Paid</p>
-                    {/* UGYANAZ A STÍLUS, MINT A WIDGETBEN: font-sans font-bold leading-none tracking-tight */}
+                    <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">{t('total_paid')}</p>
                     <div className="text-2xl md:text-3xl font-sans font-bold text-white leading-none tracking-tight">
                         €{total}
                     </div>
@@ -109,9 +110,9 @@ function ThankYouContent() {
                         <Mail size={16}/>
                     </div>
                     <div>
-                        <h4 className="text-sm font-bold text-white">Tickets sent via Email</h4>
+                        <h4 className="text-sm font-bold text-white">{t('timeline.email_title')}</h4>
                         <p className="text-xs text-stone-500 leading-relaxed mt-1">
-                            We have sent your tickets to your email address. Please check your inbox (and spam folder) within 5 minutes.
+                            {t('timeline.email_desc')}
                         </p>
                     </div>
                 </div>
@@ -121,9 +122,9 @@ function ThankYouContent() {
                         <QrCode size={16}/>
                     </div>
                     <div>
-                        <h4 className="text-sm font-bold text-white">Show on Mobile</h4>
+                        <h4 className="text-sm font-bold text-white">{t('timeline.mobile_title')}</h4>
                         <p className="text-xs text-stone-500 leading-relaxed mt-1">
-                            No printing needed. Just show the QR code from your phone at the entrance turnstiles.
+                            {t('timeline.mobile_desc')}
                         </p>
                     </div>
                 </div>
@@ -133,9 +134,9 @@ function ThankYouContent() {
                         <ShieldCheck size={16}/>
                     </div>
                     <div>
-                        <h4 className="text-sm font-bold text-white">Skip The Line Access</h4>
+                        <h4 className="text-sm font-bold text-white">{t('timeline.skip_title')}</h4>
                         <p className="text-xs text-stone-500 leading-relaxed mt-1">
-                            Your tickets include priority access. Head straight to the security check point.
+                            {t('timeline.skip_desc')}
                         </p>
                     </div>
                 </div>
@@ -144,7 +145,7 @@ function ThankYouContent() {
             {/* BUTTON */}
             <div className="mt-8 pt-6 border-t border-white/5">
                 <Link href="/" className="w-full bg-white text-black font-bold py-3.5 md:py-4 rounded-xl uppercase tracking-wider text-xs hover:bg-stone-200 transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95">
-                    <Home size={16}/> Back to Homepage
+                    <Home size={16}/> {t('back_home')}
                 </Link>
             </div>
 
@@ -152,7 +153,7 @@ function ThankYouContent() {
 
         {/* SUPPORT SECTION */}
         <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 pb-8 md:pb-0">
-            <p className="text-xs text-stone-500 mb-2">Need assistance with your booking?</p>
+            <p className="text-xs text-stone-500 mb-2">{t('support')}</p>
             <a href="mailto:info@accesstoitaly.com" className="inline-flex items-center gap-2 text-[#B8860B] text-sm font-bold hover:text-white transition-colors border border-[#B8860B]/30 px-4 py-2 rounded-full bg-[#B8860B]/10 active:scale-95">
                 <Mail size={14}/> info@accesstoitaly.com
             </a>

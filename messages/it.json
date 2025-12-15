@@ -1,0 +1,318 @@
+{
+  "HomePage": {
+    "disclaimer": "DISCLAIMER: Access to Italy è un'agenzia di biglietteria indipendente e NON è affiliata, associata o collegata alla Veneranda Fabbrica del Duomo di Milano. Offriamo un servizio di prenotazione per viaggiatori. I prezzi dei biglietti possono includere una commissione di gestione rispetto al prezzo di biglietteria.",
+    "nav": {
+      "history": "Storia",
+      "experience": "L'Esperienza",
+      "info": "Info",
+      "reviews": "Recensioni",
+      "bookBtn": "Prenota Biglietti"
+    },
+    "hero": {
+      "badge": "Il Gioiello di Milano",
+      "title": "Duomo",
+      "subtitle": "Di Milano",
+      "description": "Vivi la grandiosità gotica. Sali sulle terrazze e cammina tra le guglie della cattedrale più bella del mondo.",
+      "ratingText": "4.9/5 basato su oltre 2.450 recensioni"
+    },
+    "history": {
+      "badge": "Un Viaggio nel Tempo",
+      "title": "Sei Secoli di Storia",
+      "description": "Il Duomo non è solo un edificio; è una storia scolpita nel marmo che attraversa generazioni. Ci sono voluti quasi 600 anni per completarlo.",
+      "step1_title": "1386: La Visione",
+      "step1_desc": "L'Arcivescovo Antonio da Saluzzo inizia i lavori. Gian Galeazzo Visconti fornisce accesso esclusivo al marmo rosa di Candoglia.",
+      "step2_title": "1805: Napoleone",
+      "step2_desc": "Napoleone Bonaparte ordina il completamento per incoronarsi Re d'Italia. Una statua di Napoleone fu posta su una delle guglie.",
+      "step3_title": "Oggi",
+      "step3_desc": "La cattedrale è completa e si erge come la terza chiesa più grande del mondo. La 'Veneranda Fabbrica' lavora quotidianamente per mantenerla."
+    },
+    "features": {
+      "marble_title": "Marmo di Candoglia",
+      "marble_desc": "L'intera cattedrale è costruita con un marmo unico dalle sfumature rosa, estratto dal Lago Maggiore.",
+      "statues_title": "3.400 Statue",
+      "statues_desc": "Più statue di qualsiasi altro edificio al mondo. Dai santi ai gargoyle, la facciata è viva.",
+      "madonnina_title": "La Madonnina",
+      "madonnina_desc": "A 108 metri di altezza, la statua dorata di Maria protegge la città di Milano."
+    },
+    "secrets": {
+      "quote": "Musica congelata.",
+      "badge": "Segreti da Insider",
+      "title": "Segreti della Pietra",
+      "item1_title": "Il Pugile e il Tennista",
+      "item1_desc": "Guarda attentamente la facciata. Tra i santi, puoi trovare statue che rappresentano sport moderni.",
+      "item2_title": "La Statua della Libertà?",
+      "item2_desc": "Sul balcone, la statua 'La Legge Nuova' (1810) ha una somiglianza impressionante con la Lady Liberty di New York.",
+      "item3_title": "Il Sacro Chiodo",
+      "item3_desc": "In alto sopra l'altare, una luce rossa segna il punto di un chiodo che si crede provenga dalla Vera Croce."
+    },
+    "guide": {
+      "badge": "Guida di Viaggio",
+      "title": "Pianifica la Visita Perfetta",
+      "card1_badge": "Miglior Momento",
+      "card1_title": "Golden Hour sul Tetto",
+      "card1_desc": "Il momento più magico per visitare le terrazze è un'ora prima del tramonto.",
+      "card1_link": "Leggi Guida",
+      "card2_badge": "Consigli",
+      "card2_title": "Come Saltare la Fila",
+      "card2_desc": "Le code possono durare ore. I nostri biglietti Combo Fast-Track ti permettono di evitare la fila generale.",
+      "card2_link": "Leggi Guida",
+      "card3_badge": "Ristorazione",
+      "card3_title": "Dove Mangiare Vicino",
+      "card3_desc": "Evita le trappole per turisti. Abbiamo elencato le migliori 5 trattorie autentiche nelle vicinanze.",
+      "card3_link": "Leggi Guida"
+    },
+    "reviews": {
+      "title": "Recensioni dei Viaggiatori",
+      "r1_text": "Il processo di prenotazione è stato impeccabile. Abbiamo ricevuto i QR code istantaneamente e abbiamo saltato la fila della biglietteria.",
+      "r2_text": "Consiglio vivamente il biglietto Combo Lift. Salire le ultime scale fino alla cima vale la pena per le foto.",
+      "r3_text": "Servizio affidabile. Eravamo preoccupati che i biglietti non funzionassero, ma tutto è andato liscio ai tornelli."
+    },
+    "info": {
+      "title": "Informazioni Essenziali",
+      "subtitle": "Da sapere prima di andare.",
+      "faq1_q": "C'è un codice di abbigliamento rigido?",
+      "faq1_a": "SÌ. Il Duomo è una cattedrale attiva e vigono regole severe. Sia uomini che donne devono coprire spalle e ginocchia. Canottiere, pantaloncini e minigonne non sono permessi.",
+      "faq2_q": "Qual è la differenza tra Ascensore e Scale?",
+      "faq2_a": "Il biglietto 'Combo Lift' ti permette di prendere un ascensore fino al primo livello delle terrazze, saltando circa 200 gradini. Tuttavia, per raggiungere la cima assoluta, tutti devono fare l'ultima rampa a piedi.",
+      "faq3_q": "Posso cambiare la data del biglietto?",
+      "faq3_a": "I biglietti sono validi per 72 ore dalla data selezionata per consentire flessibilità. Tuttavia, ogni area specifica può essere visitata solo una volta.",
+      "faq4_q": "Il Museo è aperto tutti i giorni?",
+      "faq4_a": "No. Il Museo del Duomo è CHIUSO il mercoledì. Se prenoti per un mercoledì, puoi comunque visitare la Cattedrale e le Terrazze."
+    },
+    "location": {
+      "title": "Come Arrivare",
+      "metro_title": "In Metro",
+      "metro_desc": "Prendi la Linea Gialla (M3) o Rossa (M1) e scendi alla stazione Duomo.",
+      "tram_title": "In Tram",
+      "tram_desc": "Le linee 2, 3, 14 e 15 fermano in Via Torino, a soli 2 minuti a piedi."
+    }
+  },
+
+  "Booking": {
+    "steps": "Fase {step} / 4",
+    "total": "Totale",
+    "titles": {
+      "step1": "Seleziona Biglietti",
+      "step2": "Scegli Data",
+      "step3": "Ospiti",
+      "step4": "I Tuoi Dettagli"
+    },
+    "tickets": {
+      "lift_name": "Combo Ascensore",
+      "lift_desc": "Duomo + Terrazze (Ascensore) + Museo",
+      "lift_tag": "Più Popolare",
+      "stairs_name": "Combo Scale",
+      "stairs_desc": "Duomo + Terrazze (Scale) + Museo",
+      "stairs_tag": "Miglior Prezzo",
+      "duomo_name": "Duomo + Museo",
+      "duomo_desc": "Solo Cattedrale (No Terrazze)"
+    },
+    "info_validity": "I biglietti sono validi per 72 ore dalla data selezionata.",
+    "calendar": {
+      "sold_out": "Esaurito",
+      "last_spots": "Ultimi posti",
+      "entry_time": "Orario di Ingresso",
+      "selling_fast": "Vanno a ruba!"
+    },
+    "summary": {
+      "title": "Riepilogo",
+      "adult": "Adulto",
+      "adult_desc": "Età 19+",
+      "reduced": "Ridotto",
+      "reduced_desc": "Età 6-18"
+    },
+    "form": {
+      "info": "Inserisci i dettagli del <strong>Viaggiatore Principale</strong>. I biglietti verranno inviati a questa email istantaneamente.",
+      "name_placeholder": "Nome Completo",
+      "email_placeholder": "Indirizzo Email",
+      "phone_placeholder": "Numero di Telefono",
+      "security": "Crittografia SSL a 256 bit"
+    },
+    "buttons": {
+      "processing": "Elaborazione...",
+      "checkout": "Vai al Pagamento",
+      "continue": "Continua"
+    },
+    "footer": {
+      "instant": "Conferma Immediata",
+      "cancel": "Cancellazione gratuita fino a 24h"
+    }
+  },
+  "ThankYou": {
+    "title": "Pagamento Riuscito",
+    "subtitle": "La tua prenotazione è confermata.",
+    "order_number": "Numero Ordine",
+    "total_paid": "Totale Pagato",
+    "timeline": {
+      "email_title": "Biglietti inviati via Email",
+      "email_desc": "Abbiamo inviato i tuoi biglietti al tuo indirizzo email. Controlla la tua casella di posta (e spam) entro 5 minuti.",
+      "mobile_title": "Mostra su Cellulare",
+      "mobile_desc": "Nessuna stampa necessaria. Mostra semplicemente il codice QR dal tuo telefono ai tornelli d'ingresso.",
+      "skip_title": "Accesso Salta Fila",
+      "skip_desc": "I tuoi biglietti includono l'accesso prioritario. Vai direttamente ai controlli di sicurezza."
+    },
+    "back_home": "Torna alla Home",
+    "support": "Hai bisogno di assistenza?"
+  },
+  "Footer": {
+    "description": "Società di rivendita indipendente che offre servizi per il Duomo di Milano. Vivi la Cattedrale, le Terrazze e il Museo senza attese.",
+    "secure_checkout": "Pagamento Sicuro al 100%",
+    "support_title": "Assistenza Clienti",
+    "encryption": "Crittografia SSL a 256 bit",
+    "bookings_title": "Prenotazioni",
+    "bookings_desc": "Pronto a visitare Milano? Assicurati il posto ora.",
+    "buy_btn": "Acquista Biglietti Ora",
+    "copyright": "© 2025 Access To Italy. Tutti i diritti riservati.",
+    "links": {
+      "contact": "Contatti",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "terms": "Termini di Servizio"
+    }
+  },
+    "CookiePolicy": {
+    "back_home": "Torna alla Home",
+    "title": "Informativa sui Cookie",
+    "last_updated": "Ultimo aggiornamento: Dicembre 2025",
+    "intro_1": "Questa Informativa sui Cookie spiega come <bold>Access To Italy</bold> (\"noi\", \"ci\" e \"nostro\") utilizza i cookie e tecnologie simili per riconoscerti quando visiti il nostro sito web.",
+    "intro_2": "In alcuni casi, potremmo utilizzare i cookie per raccogliere informazioni personali, o che diventano tali se combinate con altre informazioni.",
+    "what_title": "Cosa sono i cookie?",
+    "what_text_1": "I cookie sono piccoli file di dati che vengono inseriti nel tuo computer o dispositivo mobile quando visiti un sito web. Sono ampiamente utilizzati per far funzionare i siti web o per farli funzionare in modo più efficiente.",
+    "what_text_2": "I cookie impostati dal proprietario del sito (noi) sono chiamati \"cookie di prima parte\". I cookie impostati da parti diverse sono chiamati \"cookie di terze parti\" (ad es. per pubblicità e analisi).",
+    "why_title": "Perché utilizziamo i cookie?",
+    "why_text": "Utilizziamo cookie di prima e terza parte per diversi motivi. Alcuni sono necessari per motivi tecnici affinché il nostro sito funzioni (\"cookie essenziali\"). Altri ci consentono di tracciare gli interessi dei nostri utenti per migliorare l'esperienza.",
+    "types_title": "Tipi di cookie che utilizziamo",
+    "type_necessary_title": "Cookie strettamente necessari",
+    "type_necessary_desc": "Questi cookie sono strettamente necessari per fornirti i servizi disponibili attraverso il nostro sito web e per utilizzare alcune delle sue funzionalità.",
+    "type_analytics_title": "Cookie analitici e di prestazione",
+    "type_analytics_desc": "Questi cookie vengono utilizzati per raccogliere informazioni sul traffico verso il nostro sito web e su come gli utenti lo utilizzano. Le informazioni non identificano il singolo visitatore.",
+    "type_marketing_title": "Cookie di targeting e pubblicitari",
+    "type_marketing_desc": "Questi cookie sono utilizzati per rendere i messaggi pubblicitari più pertinenti per te. Svolgono funzioni come impedire che lo stesso annuncio riappaia continuamente.",
+    "control_title": "Come puoi controllare i cookie?",
+    "control_text_1": "Hai il diritto di decidere se accettare o rifiutare i cookie. Puoi esercitare i tuoi diritti sui cookie impostando le tue preferenze nel banner dei cookie.",
+    "control_text_2": "Inoltre, la maggior parte dei browser web consente di controllare i cookie attraverso le impostazioni.",
+    "contact_title": "Contattaci",
+    "contact_text": "Se hai domande sul nostro utilizzo dei cookie o di altre tecnologie, inviaci un'e-mail a:"
+  },
+  "PrivacyPolicy": {
+  "back_home": "Torna alla Home",
+  "title": "Informativa sulla Privacy",
+  "last_updated": "Ultimo aggiornamento: Dicembre 2025",
+  "intro_1": "Presso <bold>Access To Italy</bold>, accessibile da accesstoitaly.com, una delle nostre principali priorità è la privacy dei nostri visitatori. Questo documento contiene i tipi di informazioni che vengono raccolte e registrate da Access To Italy e come le utilizziamo.",
+  "intro_2": "Se hai ulteriori domande o richiedi maggiori informazioni sulla nostra Informativa sulla Privacy, non esitare a contattarci.",
+  "intro_3": "Questa Informativa sulla Privacy si applica solo alle nostre attività online ed è valida per i visitatori del nostro sito web per quanto riguarda le informazioni condivise e/o raccolte in Access To Italy.",
+  "collect_title": "Informazioni che raccogliamo",
+  "collect_text": "Quando prenoti un biglietto o ci contatti, potremmo chiederti di fornire informazioni personali specifiche. Le informazioni personali richieste e i motivi della richiesta ti saranno chiariti al momento in cui ti chiediamo di fornire i tuoi dati personali.",
+  "collect_list_contact": "Informazioni di contatto: Nome completo, indirizzo email e numero di telefono (per inviare biglietti e aggiornamenti).",
+  "collect_list_booking": "Dettagli della prenotazione: Data della visita, tipo di biglietto e numero di ospiti.",
+  "collect_list_payment": "Informazioni di pagamento: Non memorizziamo i dettagli della tua carta di credito sui nostri server. Tutti i pagamenti sono elaborati in modo sicuro dal nostro processore di pagamento di terze parti.",
+  "use_title": "Come utilizziamo le tue informazioni",
+  "use_text": "Utilizziamo le informazioni che raccogliamo in vari modi, tra cui:",
+  "use_card_process": "Elaborare transazioni: Per elaborare l'ordine del biglietto e consegnare i biglietti digitali alla tua email.",
+  "use_card_support": "Assistenza clienti: Per comunicare con te in merito alla tua prenotazione, aggiornamenti o cancellazioni.",
+  "use_card_improve": "Migliorare i servizi: Per capire e analizzare come utilizzi il nostro sito web per migliorare l'esperienza utente.",
+  "use_card_marketing": "Marketing (Opzionale): Per inviarti email su nuovi prodotti o offerte, solo se hai acconsentito.",
+  "analytics_title": "Google Analytics & Google Ads",
+  "analytics_text_1": "Utilizziamo servizi di terze parti come Google Analytics e Google Ads per analizzare il traffico del sito web e gestire la nostra pubblicità.",
+  "analytics_text_2": "Monitoraggio delle conversioni: Utilizziamo il monitoraggio delle conversioni di Google Ads per misurare il successo delle nostre campagne pubblicitarie.",
+  "analytics_text_3": "Puoi scegliere di disabilitare i cookie tramite le opzioni del tuo browser o tramite le impostazioni del nostro Cookie Banner.",
+  "security_title": "Sicurezza dei dati",
+  "security_text": "Apprezziamo la tua fiducia nel fornirci le tue informazioni personali, quindi utilizziamo mezzi commercialmente accettabili per proteggerle. Il nostro sito utilizza la <bold>crittografia SSL a 256 bit</bold>.",
+  "thirdparty_title": "Divulgazione a terze parti",
+  "thirdparty_text": "Non vendiamo, scambiamo o trasferiamo a terzi le tue informazioni di identificazione personale a meno che non forniamo agli utenti un preavviso. Questo non include i partner di hosting del sito web e altre parti che ci assistono nel funzionamento del nostro sito web.",
+  "gdpr_title": "Diritti di protezione dei dati GDPR",
+  "gdpr_text": "Vorremmo assicurarci che tu sia pienamente consapevole di tutti i tuoi diritti di protezione dei dati. Ogni utente ha diritto a quanto segue:",
+  "gdpr_list_access": "Diritto di accesso – Hai il diritto di richiedere copie dei tuoi dati personali.",
+  "gdpr_list_rectification": "Diritto di rettifica – Hai il diritto di richiedere che correggiamo qualsiasi informazione che ritieni inesatta.",
+  "gdpr_list_erasure": "Diritto alla cancellazione – Hai il diritto di richiedere che cancelliamo i tuoi dati personali, a determinate condizioni.",
+  "gdpr_list_restrict": "Diritto di limitazione del trattamento – Hai il diritto di richiedere di limitare il trattamento dei tuoi dati personali.",
+  "contact_title": "Contattaci",
+  "label_company": "Azienda",
+  "label_address": "Indirizzo",
+  "label_email": "Email"
+},
+"TermsOfService": {
+  "back_home": "Torna alla Home",
+  "title": "Termini e Condizioni",
+  "last_updated": "Ultimo aggiornamento: Dicembre 2025",
+  "intro_title": "1. Introduzione",
+  "intro_text": "Questi Termini e Condizioni (\"T&C\") regolano l'uso dei servizi e l'acquisto di prodotti offerti da <bold>Andras Toth (imprenditore individuale)</bold>. Utilizzando i nostri servizi, tu (\"Cliente\") accetti di essere vincolato da questi termini.",
+  "bookings_title": "2. Prenotazioni, Cancellazioni e Ripianificazione",
+  "bookings_list_1": "Tutte le prenotazioni devono essere effettuate in anticipo e sono soggette a disponibilità.",
+  "bookings_list_2": "Le cancellazioni sono accettate solo se richieste almeno <strong>24 ore prima</strong> dell'orario previsto.",
+  "bookings_list_3": "Per cancellazioni effettuate con meno di 24 ore di anticipo, potrebbe essere addebitata l'intera tariffa.",
+  "bookings_list_4": "La ripianificazione può essere possibile a seconda della disponibilità, se richiesta almeno 24 ore prima.",
+  "external_title": "3. Esclusione di responsabilità per eventi esterni",
+  "external_list_1": "Non siamo responsabili per problemi al di fuori del nostro controllo, inclusi ma non limitati a: chiusure stradali, chiusure di attrazioni o condizioni meteorologiche.",
+  "external_list_2": "Tali eventi non danno diritto a rimborsi automatici.",
+  "refund_title": "4. Politica di Rimborso",
+  "refund_list_1": "I biglietti per servizi ricreativi in una data specifica non sono soggetti al diritto di recesso di 14 giorni ai sensi della Direttiva 2011/83/UE.",
+  "refund_list_2": "Tuttavia, offriamo la <strong>cancellazione gratuita fino a 24 ore</strong> prima dell'orario previsto.",
+  "refund_list_3": "Dopo questo periodo, i biglietti non sono rimborsabili.",
+  "refund_list_4": "I rimborsi sono considerati solo in casi eccezionali e giustificati.",
+  "refund_list_5": "Le richieste di rimborso devono essere effettuate entro 7 giorni dall'acquisto a <a href=\"mailto:info@accesstoitaly.com\" class=\"text-[#B8860B] font-bold\">info@accesstoitaly.com</a>.",
+  "payments_title": "5. Pagamenti",
+  "payments_list_1": "Tutti i prezzi sono in EUR e includono le tasse applicabili.",
+  "payments_list_2": "I pagamenti devono essere completati prima di ricevere il prodotto o servizio.",
+  "payments_list_3": "Ci riserviamo il diritto di rifiutare il servizio se il pagamento non è stato ricevuto.",
+  "liability_title": "6. Responsabilità",
+  "liability_list_1": "Non siamo responsabili per danni indiretti o consequenziali derivanti dall'uso dei nostri servizi.",
+  "liability_list_2": "La nostra responsabilità massima è limitata all'importo totale pagato dal cliente.",
+  "liability_list_3": "La nostra responsabilità non si estende a perdite derivanti dalla chiusura di sedi di terze parti.",
+  "changes_title": "7. Modifiche a questi termini",
+  "changes_text": "Ci riserviamo il diritto di modificare questi T&C in qualsiasi momento. Le modifiche avranno effetto immediato dopo la pubblicazione.",
+  "delivery_title": "8. Consegna dei biglietti",
+  "delivery_list_1": "I biglietti vengono consegnati digitalmente come file PDF via email.",
+  "delivery_list_2": "La consegna si considera completata quando il nostro sistema conferma l'invio dell'email.",
+  "delivery_list_3": "Se non ricevi i biglietti, controlla lo spam e contattaci a <a href=\"mailto:info@accesstoitaly.com\" class=\"text-[#B8860B] font-bold\">info@accesstoitaly.com</a>.",
+  "complaints_title": "9. Servizio Clienti e Reclami",
+  "complaints_text_1": "Puoi contattarci a <a href=\"mailto:info@accesstoitaly.com\" class=\"text-[#B8860B] font-bold\">info@accesstoitaly.com</a>.",
+  "complaints_text_2": "Cerchiamo di rispondere entro 2 giorni lavorativi. Si prega di contattarci prima di effettuare uno storno di addebito (chargeback).",
+  "law_title": "10. Legge applicabile e risoluzione delle controversie",
+  "law_list_1": "Questi T&C sono regolati dalle leggi dell'Ungheria. I tribunali dell'Ungheria avranno giurisdizione.",
+  "law_list_2": "I consumatori possono utilizzare la piattaforma ODR dell'UE: <a href=\"https://ec.europa.eu/consumers/odr\" target=\"_blank\" class=\"text-[#B8860B] underline\">https://ec.europa.eu/consumers/odr</a>",
+  "contact_title": "11. Contatti",
+  "contact_text": "Se hai domande su questi termini, contattaci a:",
+  "contact_disclaimer": "In caso di discrepanze tra le versioni linguistiche, prevale la versione inglese."
+},
+"Contact": {
+  "back_home": "Torna alla Home",
+  "title": "Contatti e Supporto",
+  "subtitle_1": "Hai domande sulla tua prenotazione? Siamo qui per aiutarti.",
+  "subtitle_2": "Controlla le FAQ qui sotto per risposte immediate.",
+  "form_success_title": "Messaggio Inviato!",
+  "form_success_desc": "Ti risponderemo a breve.",
+  "form_send_another": "Invia un altro messaggio",
+  "label_name": "Nome Completo",
+  "placeholder_name": "Mario Rossi",
+  "label_order": "ID Ordine (Opzionale)",
+  "placeholder_order": "#12345678",
+  "label_email": "Indirizzo Email",
+  "placeholder_email": "mario@esempio.it",
+  "label_message": "Messaggio",
+  "placeholder_message": "Come possiamo aiutarti?",
+  "btn_sending": "Invio in corso...",
+  "btn_send": "Invia Messaggio",
+  "info_email_title": "Scrivici",
+  "info_response_title": "Tempo di risposta",
+  "info_response_text": "Entro 24 ore",
+  "faq_title": "Domande Frequenti",
+  "faq_1_q": "Non ho ancora ricevuto i miei biglietti.",
+  "faq_1_a": "I biglietti vengono solitamente inviati all'istante, ma possono richiedere fino a 10 minuti. Controlla la cartella Spam. Se non li trovi, forniscici il tuo ID Ordine.",
+  "faq_2_q": "Posso cancellare o riprogrammare la mia prenotazione?",
+  "faq_2_a": "Sì. Puoi cancellare per un rimborso completo o riprogrammare fino a 24 ore prima della visita.",
+  "faq_3_q": "C'è un codice di abbigliamento?",
+  "faq_3_a": "Spalle e ginocchia devono essere coperte. Questa regola è rigorosamente applicata dalla sicurezza della cattedrale. L'ingresso può essere negato senza rimborso se non si rispetta.",
+  "faq_4_q": "Devo stampare i miei biglietti?",
+  "faq_4_a": "No. Puoi mostrare il codice QR direttamente dal tuo smartphone ai tornelli d'ingresso.",
+  "office_title": "Indirizzo Ufficio",
+  "office_note": "Nota bene: Questo indirizzo è solo per scopi amministrativi. Non si vendono biglietti in questa sede."
+}
+}
+
+
+   
+  
+
+
+  

@@ -1,32 +1,123 @@
-'use client'; // Fontos!
+'use client'; 
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase'; 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { 
   Minus, Plus, ArrowRight, Check, Calendar, AlertCircle, Info, 
-  ChevronLeft, User, Mail, Phone, Lock, Shield, Loader2, Flame
+  ChevronLeft, User, Mail, Phone, Lock, Shield, Loader2, Flame, CreditCard
 } from 'lucide-react';
 
-const TICKET_VARIANTS = [
-  { id: 'lift', name: 'Combo Lift', desc: 'Duomo + Terraces (Lift) + Museum', price: 26, reduced: 13, highlight: 'Most Popular' },
-  { id: 'stairs', name: 'Combo Stairs', desc: 'Duomo + Terraces (Stairs) + Museum', price: 20, reduced: 10, highlight: 'Best Value' },
-  { id: 'duomo', name: 'Duomo + Museum', desc: 'Cathedral Access Only (No Terraces)', price: 15, reduced: 8, highlight: null },
-];
+// --- STRIPE INITIALIZATION ---
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
+// --- TÍPUSOK ---
+interface StripePaymentFormProps {
+  total: number;
+  customerDetails: { fullName: string; email: string; phone: string }; // ÚJ: Átvesszük az adatokat
+  onSuccess: () => void;
+  onError: (msg: string) => void;
+}
+
+// --- 1. KOMPONENS: A STRIPE FIZETÉSI ŰRLAP ---
+const StripePaymentForm = ({ total, customerDetails, onSuccess, onError }: StripePaymentFormProps) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [message, setMessage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/thank-you`,
+        payment_method_data: {
+            billing_details: {
+                name: customerDetails.fullName,
+                email: customerDetails.email, // JAVÍTVA: .email a helyes
+                phone: customerDetails.phone,
+            } as any
+        }
+      },
+      redirect: 'if_required', 
+    });
+
+    if (error) {
+      const errorMsg = error.message || "Ismeretlen hiba történt.";
+      setMessage(errorMsg);
+      onError(errorMsg);
+      setIsProcessing(false);
+    } else {
+      onSuccess();
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 fade-in-anim">
+      <div className="bg-stone-50 p-1 rounded-xl border border-stone-200">
+        {/* ITT A VARÁZSLAT: layout: 'tabs' és defaultValues */}
+        <PaymentElement 
+            options={{ 
+                layout: "tabs",
+                defaultValues: {
+                    billingDetails: {
+                        name: customerDetails.fullName,
+                        email: customerDetails.email,
+                        phone: customerDetails.phone
+                    }
+                }
+            }} 
+        />
+      </div>
+      {message && (
+        <div className="text-red-500 text-sm font-bold bg-red-50 p-3 rounded-lg flex gap-2">
+            <AlertCircle size={16}/> {message}
+        </div>
+      )}
+      
+      <button 
+        disabled={isProcessing || !stripe || !elements} 
+        className="w-full bg-[#1a1a1a] text-white h-14 rounded-xl font-bold tracking-wide flex items-center justify-center gap-3 hover:bg-stone-800 disabled:bg-stone-300 transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] text-lg"
+      >
+        {isProcessing ? <><Loader2 className="animate-spin" size={20}/> Feldolgozás...</> : <>Fizetés €{total} <CreditCard size={20}/></>}
+      </button>
+      
+      {/* A "100% Biztonságos fizetés" szöveg innen törölve lett */}
+    </form>
+  );
+};
+
+// --- 2. KOMPONENS: FŐ WIDGET ---
 export default function BookingWidget() {
+  const t = useTranslations('Booking'); 
+  const locale = useLocale(); // Lekérjük a nyelvet (pl. 'en', 'it', 'hu')
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState(TICKET_VARIANTS[0]);
   
+  const ticketVariants = [
+    { id: 'lift', name: t('tickets.lift_name'), desc: t('tickets.lift_desc'), price: 26, reduced: 13, highlight: t('tickets.lift_tag') },
+    { id: 'stairs', name: t('tickets.stairs_name'), desc: t('tickets.stairs_desc'), price: 20, reduced: 10, highlight: t('tickets.stairs_tag') },
+    { id: 'duomo', name: t('tickets.duomo_name'), desc: t('tickets.duomo_desc'), price: 15, reduced: 8, highlight: null },
+  ];
+
+  const [step, setStep] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState(ticketVariants[0]);
   const [adults, setAdults] = useState(1);
   const [reduced, setReduced] = useState(0);
-  
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [formData, setFormData] = useState({ fullName: '', email: '', phone: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
+  const [clientSecret, setClientSecret] = useState("");
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [availabilityRules, setAvailabilityRules] = useState<any[]>([]);
 
   const today = new Date();
@@ -36,11 +127,14 @@ export default function BookingWidget() {
 
   const total = (adults * selectedVariant.price) + (reduced * selectedVariant.reduced);
   const count = adults + reduced;
-  
-  // Összes lehetséges időpont (11 db)
   const times = ["09:00", "09:30", "10:00", "10:30", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
-  
   const isFormValid = formData.fullName.length > 3 && formData.email.includes('@') && formData.phone.length > 6;
+
+  useEffect(() => {
+    const currentId = selectedVariant.id;
+    const updatedVariant = ticketVariants.find(v => v.id === currentId);
+    if (updatedVariant) setSelectedVariant(updatedVariant);
+  }, []); 
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -54,7 +148,6 @@ export default function BookingWidget() {
     return `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
-  // --- NAPTÁR LOGIKA (BŐVÍTVE) ---
   const getDayStatus = (day: number) => {
     const dateStr = getDateString(day);
     const rule = availabilityRules.find(r => r.blocked_date === dateStr);
@@ -64,20 +157,19 @@ export default function BookingWidget() {
     if (!rule) return { status: 'open', label: '' };
 
     const applies = rule.ticket_type === 'all' || rule.ticket_type === selectedVariant.id;
-    
     if (!applies) return { status: 'open', label: '' };
-    if (rule.is_full_day_blocked) return { status: 'blocked', label: 'Sold Out' };
+    if (rule.is_full_day_blocked) return { status: 'blocked', label: t('calendar.sold_out') };
 
-    // Számoljuk ki hány hely maradt
     const blockedCount = rule.blocked_times?.length || 0;
     const remainingSlots = times.length - blockedCount;
 
-    if (remainingSlots <= 3 && remainingSlots > 0) {
-        return { status: 'low', label: 'Last spots' }; // Sárga jelzés
+    if (remainingSlots <= 2 && remainingSlots > 0) {
+        return { status: 'critical', label: t('calendar.last_spots') };
     }
-    
-    // Ha minden időpont le van zárva kézileg
-    if (remainingSlots === 0) return { status: 'blocked', label: 'Sold Out' };
+    if (remainingSlots <= 4 && remainingSlots > 2) {
+       return { status: 'low', label: t('calendar.selling_fast') };
+    }
+    if (remainingSlots === 0) return { status: 'blocked', label: t('calendar.sold_out') };
 
     return { status: 'open', label: '' };
   };
@@ -91,7 +183,7 @@ export default function BookingWidget() {
     return applies && rule.blocked_times?.includes(t);
   };
 
-  const handleCheckout = async () => {
+  const initializePayment = async () => {
     if (!selectedDay) return;
     setIsSubmitting(true);
     const formattedDate = getDateString(selectedDay);
@@ -101,46 +193,58 @@ export default function BookingWidget() {
         date: formattedDate,
         time: time,
         adults: adults, reduced: reduced, total: total,
-        fullName: formData.fullName, email: formData.email, phone: formData.phone
+        fullName: formData.fullName, email: formData.email, phone: formData.phone,
+        currency: 'eur'
     };
 
     try {
-        const response = await fetch('/api/create-order', {
+        const response = await fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData),
         });
+        
+        if (!response.ok) throw new Error('API error');
+        
         const result = await response.json();
 
-        if (result.success) {
-            // ÁTIRÁNYÍTÁS A THANK YOU PAGE-RE (Query paraméterekkel a Google Adsnek)
-            router.push(`/thank-you?orderId=${result.orderId}&total=${total}&currency=EUR`);
+        if (result.clientSecret) {
+            setClientSecret(result.clientSecret);
+            setOrderId(result.orderId); 
+            setStep(5);
         } else {
-            alert("Hiba történt. Kérjük próbáld újra.");
+            alert("Payment initialization failed.");
         }
-    } catch (error) { alert("Hálózati hiba."); } 
-    finally { setIsSubmitting(false); }
+    } catch (error) { 
+        console.error(error);
+        alert("Network error."); 
+    } finally { 
+        setIsSubmitting(false); 
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+     router.push(`/${locale}/thank-you?orderId=${orderId || 'new'}&total=${total}&currency=EUR`);
   };
 
   const handleNext = () => {
     if (step === 1) setStep(2);
     else if (step === 2 && selectedDay && time) setStep(3);
     else if (step === 3 && count > 0) setStep(4);
-    else if (step === 4 && isFormValid) handleCheckout();
+    else if (step === 4 && isFormValid) initializePayment(); 
   };
 
   const handleBack = () => { if (step > 1) setStep(step - 1); };
 
-  // --- RENDER ---
   return (
     <>
     <style jsx global>{`
         @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse-yellow { 0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(234, 179, 8, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
         .step-animation { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .fade-in-anim { animation: fadeIn 0.3s ease-out forwards; }
-        .pulse-dot { animation: pulse-yellow 2s infinite; }
+        .pulse-dot-red { animation: pulse-red 2s infinite; background-color: #ef4444; }
     `}</style>
 
     <div className="bg-white w-full rounded-3xl shadow-2xl border border-stone-100 relative z-20 text-[#1a1a1a] flex flex-col transition-all duration-300">
@@ -149,12 +253,21 @@ export default function BookingWidget() {
       <div className="p-5 md:p-8 border-b border-stone-100">
         <div className="flex justify-between items-center mb-4">
             {step > 1 ? ( <button onClick={handleBack} className="text-stone-400 hover:text-[#B8860B] transition p-1 -ml-1"><ChevronLeft size={24}/></button> ) : <div className="w-6"></div>}
-            <span className="text-[#B8860B] text-[10px] font-bold tracking-[0.2em] uppercase">Step {step} / 4</span>
+            <span className="text-[#B8860B] text-[10px] font-bold tracking-[0.2em] uppercase">{step === 5 ? t('steps', {step: 4}) : t('steps', {step: step})}</span>
             <div className="w-6"></div>
         </div>
         <div className="flex justify-between items-end">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1a1a1a] leading-none">{step === 1 ? 'Select Tickets' : step === 2 ? 'Choose Date' : step === 3 ? 'Guests' : 'Your Details'}</h2>
-            <div className="text-right"><div className="text-[9px] text-stone-400 uppercase tracking-widest mb-1">Total</div><div className="text-2xl font-sans font-bold text-[#1a1a1a] leading-none tracking-tight">€{total}</div></div>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1a1a1a] leading-none">
+                {step === 1 ? t('titles.step1') 
+                 : step === 2 ? t('titles.step2') 
+                 : step === 3 ? t('titles.step3') 
+                 : step === 4 ? t('titles.step4')
+                 : 'Payment'} 
+            </h2>
+            <div className="text-right">
+                <div className="text-[9px] text-stone-400 uppercase tracking-widest mb-1">{t('total')}</div>
+                <div className="text-2xl font-sans font-bold text-[#1a1a1a] leading-none tracking-tight">€{total}</div>
+            </div>
         </div>
       </div>
 
@@ -164,21 +277,21 @@ export default function BookingWidget() {
           {/* STEP 1 */}
           {step === 1 && (
             <div key="step1" className="space-y-3 step-animation">
-              {TICKET_VARIANTS.map((variant) => (
+              {ticketVariants.map((variant) => (
                 <div key={variant.id} onClick={() => setSelectedVariant(variant)} className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 relative group active:scale-[0.98] ${selectedVariant.id === variant.id ? 'border-[#B8860B] bg-[#B8860B]/5' : 'border-stone-100 hover:border-[#B8860B]/30 bg-white'}`}>
                   {variant.highlight && <span className={`absolute -top-2 right-4 text-white text-[9px] px-2 py-0.5 rounded uppercase tracking-wider font-bold shadow-sm transition-colors ${selectedVariant.id === variant.id ? 'bg-[#B8860B]' : 'bg-[#1a1a1a]'}`}>{variant.highlight}</span>}
                   <div className="flex justify-between items-center mb-1"><span className="font-bold text-[#1a1a1a]">{variant.name}</span><span className="font-sans font-bold text-[#B8860B]">€{variant.price}</span></div>
                   <p className="text-xs text-stone-500 leading-snug">{variant.desc}</p>
                 </div>
               ))}
-              <div className="flex items-start gap-2 mt-4 p-3 bg-stone-50 rounded-lg text-xs text-stone-500"><Info size={14} className="flex-shrink-0 mt-0.5 text-[#B8860B]"/><p>Tickets are valid for 72 hours from the selected date.</p></div>
+              <div className="flex items-start gap-2 mt-4 p-3 bg-stone-50 rounded-lg text-xs text-stone-500"><Info size={14} className="flex-shrink-0 mt-0.5 text-[#B8860B]"/><p>{t('info_validity')}</p></div>
             </div>
           )}
 
-          {/* STEP 2 (OKOS NAPTÁR SÁRGA PÖTTYEL) */}
+          {/* STEP 2 */}
           {step === 2 && (
             <div key="step2" className="step-animation">
-              <div className="bg-stone-50 p-3 rounded-xl border border-stone-100 mb-4">
+              <div className="bg-stone-50 p-2 md:p-3 rounded-xl border border-stone-100 mb-4">
                   <div className="grid grid-cols-7 gap-1 mb-2 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">{['M','T','W','T','F','S','S'].map((day, i) => <div key={i}>{day}</div>)}</div>
                   <div className="grid grid-cols-7 gap-1 md:gap-2">
                     {[...Array(31)].map((_, i) => {
@@ -188,7 +301,6 @@ export default function BookingWidget() {
                       
                       let btnClass = 'bg-white text-stone-600 border-stone-200 hover:border-[#B8860B] hover:text-[#B8860B] active:bg-stone-100';
                       let isDisabled = false;
-
                       if (isSelected) btnClass = 'bg-[#1a1a1a] text-white border-[#1a1a1a] shadow-md font-bold';
                       else if (status === 'disabled') { btnClass = 'bg-transparent text-stone-300 border-transparent'; isDisabled = true; }
                       else if (status === 'blocked') { btnClass = 'bg-stone-100 text-stone-300 border-transparent line-through decoration-stone-300'; isDisabled = true; }
@@ -201,25 +313,22 @@ export default function BookingWidget() {
                         className={`aspect-square rounded-lg text-sm flex items-center justify-center transition-all duration-200 border relative ${btnClass}`}
                       >
                         {day}
-                        {/* SÁRGA PÖTTY HA KEVÉS A HELY */}
-                        {status === 'low' && !isDisabled && !isSelected && (
-                            <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-500 rounded-full pulse-dot"></span>
-                        )}
+                        {status === 'critical' && !isDisabled && !isSelected && <span className="absolute top-1 right-1 w-2 h-2 rounded-full pulse-dot-red"></span>}
+                        {status === 'low' && !isDisabled && !isSelected && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>}
                       </button>
                     )})}
                   </div>
               </div>
               
-              {/* Time Slots */}
               {selectedDay && (
                 <div className="mt-4">
                     <div className="flex justify-between items-center mb-3 fade-in-anim">
-                        <p className="text-xs font-bold text-stone-400 uppercase">Entry Time</p>
-                        {getDayStatus(selectedDay).status === 'low' && (
-                            <span className="text-[10px] font-bold text-yellow-600 flex items-center gap-1 bg-yellow-100 px-2 py-0.5 rounded-full"><Flame size={10}/> Selling Fast!</span>
+                        <p className="text-xs font-bold text-stone-400 uppercase">{t('calendar.entry_time')}</p>
+                        {getDayStatus(selectedDay).status === 'critical' && (
+                            <span className="text-[10px] font-bold text-red-600 flex items-center gap-1 bg-red-100 px-2 py-0.5 rounded-full"><Flame size={10}/> {t('calendar.last_spots')}</span>
                         )}
                     </div>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
                         {times.map((t, index) => {
                             const blocked = isTimeBlocked(t);
                             return (
@@ -246,49 +355,81 @@ export default function BookingWidget() {
             </div>
           )}
 
-          {/* STEP 3 & 4 */}
+          {/* STEP 3 */}
           {step === 3 && (
             <div key="step3" className="step-animation space-y-6">
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-6 flex items-center gap-4">
                  <div className="bg-white p-2 rounded-lg border border-stone-100 shadow-sm"><Calendar size={20} className="text-[#B8860B]"/></div>
-                 <div><p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Summary</p><p className="font-bold text-sm text-[#1a1a1a]">Dec {selectedDay}, {time}</p><p className="text-xs text-stone-500">{selectedVariant.name}</p></div>
+                 <div><p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{t('summary.title')}</p><p className="font-bold text-sm text-[#1a1a1a]">Dec {selectedDay}, {time}</p><p className="text-xs text-stone-500">{selectedVariant.name}</p></div>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-stone-100">
-                <div><p className="font-bold text-[#1a1a1a]">Adult</p><p className="text-xs text-stone-500">Age 19+</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.price}</p></div>
+                <div><p className="font-bold text-[#1a1a1a]">{t('summary.adult')}</p><p className="text-xs text-stone-500">{t('summary.adult_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.price}</p></div>
                 <div className="flex items-center gap-4"><button onClick={() => setAdults(Math.max(0, adults - 1))} className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-50 text-[#1a1a1a] transition active:scale-90"><Minus size={16}/></button><span className="w-6 text-center font-bold text-lg text-[#1a1a1a]">{adults}</span><button onClick={() => setAdults(adults + 1)} className="w-10 h-10 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center hover:bg-stone-800 transition active:scale-90"><Plus size={16}/></button></div>
               </div>
               <div className="flex justify-between items-center">
-                <div><p className="font-bold text-[#1a1a1a]">Reduced</p><p className="text-xs text-stone-500">Age 6-18</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.reduced}</p></div>
+                <div><p className="font-bold text-[#1a1a1a]">{t('summary.reduced')}</p><p className="text-xs text-stone-500">{t('summary.reduced_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.reduced}</p></div>
                 <div className="flex items-center gap-4"><button onClick={() => setReduced(Math.max(0, reduced - 1))} className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-50 text-[#1a1a1a] transition active:scale-90"><Minus size={16}/></button><span className="w-6 text-center font-bold text-lg text-[#1a1a1a]">{reduced}</span><button onClick={() => setReduced(reduced + 1)} className="w-10 h-10 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center hover:bg-stone-800 transition active:scale-90"><Plus size={16}/></button></div>
               </div>
             </div>
           )}
 
+          {/* STEP 4 */}
           {step === 4 && (
             <div key="step4" className="step-animation space-y-4">
-                <div className="bg-[#B8860B]/10 p-4 rounded-xl flex gap-3 items-start mb-4 border border-[#B8860B]/20"><AlertCircle size={18} className="text-[#B8860B] flex-shrink-0 mt-0.5"/><p className="text-xs text-stone-700 leading-relaxed">Please enter the <strong>Lead Traveler's</strong> details. Tickets will be sent to this email address instantly.</p></div>
-                <div className="space-y-4">
-                    <div className="relative"><User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="text" placeholder="Full Name" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
-                    <div className="relative"><Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="email" placeholder="Email Address" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
-                    <div className="relative"><Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="tel" placeholder="Phone Number" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
+                <div className="bg-[#B8860B]/10 p-4 rounded-xl flex gap-3 items-start mb-4 border border-[#B8860B]/20"><AlertCircle size={18} className="text-[#B8860B] flex-shrink-0 mt-0.5"/>
+                    <p className="text-xs text-stone-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: t.raw('form.info') }} />
                 </div>
-                <div className="flex items-center gap-2 justify-center mt-4"><Lock size={12} className="text-stone-400"/><span className="text-[10px] text-stone-400 uppercase tracking-wider">256-bit SSL Encrypted</span></div>
+                <div className="space-y-4">
+                    <div className="relative"><User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="text" placeholder={t('form.name_placeholder')} value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 md:py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
+                    <div className="relative"><Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="email" placeholder={t('form.email_placeholder')} value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 md:py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
+                    <div className="relative"><Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"/><input type="tel" placeholder={t('form.phone_placeholder')} value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 md:py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all text-[#1a1a1a] placeholder:text-stone-400"/></div>
+                </div>
+                <div className="flex items-center gap-2 justify-center mt-4"><Lock size={12} className="text-stone-400"/><span className="text-[10px] text-stone-400 uppercase tracking-wider">{t('form.security')}</span></div>
             </div>
+          )}
+
+          {/* STEP 5 - FIZETÉS (STRIPE) */}
+          {step === 5 && clientSecret && (
+             <div className="step-animation">
+                {/* FONTOS: Átadjuk a 'locale' propot, hogy a Stripe kövesse az oldal nyelvét! 
+                    (locale as any) azért kell, mert a Stripe típusok néha szigorúbbak a stringnél.
+                */}
+                <Elements 
+                  options={{ 
+                    clientSecret, 
+                    locale: locale as any, 
+                    appearance: { 
+                        theme: 'stripe', 
+                        variables: { colorPrimary: '#B8860B', fontFamily: 'sans-serif' } 
+                    } 
+                  }} 
+                  stripe={stripePromise}
+                >
+                    <StripePaymentForm 
+                        total={total} 
+                        customerDetails={formData} // Átadjuk az adatokat, hogy ne kérdezze újra
+                        onSuccess={handlePaymentSuccess} 
+                        onError={(msg: string) => alert(msg)} 
+                    />
+                </Elements>
+             </div>
           )}
       </div>
 
       {/* FOOTER */}
+      {step < 5 && (
       <div className="p-5 md:p-8 border-t border-stone-100 bg-white rounded-b-3xl">
         <button onClick={handleNext} disabled={(step === 2 && (!selectedDay || !time)) || (step === 3 && count === 0) || (step === 4 && !isFormValid) || isSubmitting} className="w-full bg-[#1a1a1a] text-white h-14 rounded-xl font-bold tracking-wide flex items-center justify-center gap-3 hover:bg-stone-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] text-lg">
-          {isSubmitting ? <><Loader2 className="animate-spin" size={20}/> Processing...</> : (step === 4 ? 'Go to Checkout' : 'Continue')} {!isSubmitting && <ArrowRight size={20} />}
+          {isSubmitting ? <><Loader2 className="animate-spin" size={20}/> {t('buttons.processing')}</> : (step === 4 ? 'Continue to Payment' : t('buttons.continue'))} {!isSubmitting && <ArrowRight size={20} />}
         </button>
         {step < 4 && (
             <div className="mt-5 flex flex-col items-center gap-2">
-                <div className="flex items-center gap-2 text-[10px] text-stone-500 uppercase tracking-widest font-medium"><Check size={12} className="text-green-600"/> Instant Confirmation</div>
-                <div className="flex items-center gap-2 text-[10px] text-stone-500 uppercase tracking-widest font-medium"><Shield size={12} className="text-[#B8860B]"/> Free cancellation up to 24hrs</div>
+                <div className="flex items-center gap-2 text-[10px] text-stone-500 uppercase tracking-widest font-medium"><Check size={12} className="text-green-600"/> {t('footer.instant')}</div>
+                <div className="flex items-center gap-2 text-[10px] text-stone-500 uppercase tracking-widest font-medium"><Shield size={12} className="text-[#B8860B]"/> {t('footer.cancel')}</div>
             </div>
         )}
       </div>
+      )}
     </div>
     </>
   );

@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
-:root {
-  /* Alapértelmezett háttér: MÉLY FEKETE (#1a1a1a) */
-  /* Így a sötét Hero és Footer alatt nem tud fehér csík kivillanni */
-  --background: #1a1a1a;
-  --foreground: #ffffff;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Ez a standard reset, nem kell túlbonyolítani */
+@layer base {
+  *, ::after, ::before {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+  }
+}
+
 html, body {
-  background-color: #1a1a1a !important; /* Kényszerített fekete alap */
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
+  background-color: #1a1a1a;
+  color: #ffffff;
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

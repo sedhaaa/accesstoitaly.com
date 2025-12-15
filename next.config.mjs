@@ -1,3 +1,9 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
+// --- A MEGOLDÁS ITT VAN ---
+// Megmondjuk neki konkrétan, hogy a gyökérben lévő './i18n.ts' fájlt használja!
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -14,4 +20,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
