@@ -10,21 +10,18 @@ import {
 } from 'lucide-react';
 
 // --- GOOGLE ADS TRACKING ---
-// Ez a komponens felelős azért, hogy a Google tudja: vásárlás történt!
 function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, total: string, currency: string }) {
   useEffect(() => {
-    // Csak kliens oldalon, és csak ha van valós ID
     if (typeof window !== 'undefined' && (window as any).gtag && orderId !== 'UNKNOWN') {
       
       const storageKey = `ads_tracked_${orderId}`;
       const alreadyTracked = localStorage.getItem(storageKey);
 
-      // Csak egyszer küldjük el a konverziót rendelésenként!
       if (!alreadyTracked) {
         console.log('Firing Google Ads Conversion:', orderId);
         
         (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- NE FELEJTSD EL KICSERÉLNI A SAJÁTODRA!
+            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- CSERÉLD LE A SAJÁTODRA!
             'value': parseFloat(total),
             'currency': currency,
             'transaction_id': orderId
@@ -43,10 +40,13 @@ function ThankYouContent() {
   const searchParams = useSearchParams();
   
   const rawId = searchParams.get('orderId') || 'UNKNOWN';
-  const total = searchParams.get('total') || '0';
+  const totalParam = searchParams.get('total') || '0';
   const currency = searchParams.get('currency') || 'EUR';
 
-  // Obfuszkált (rejtett) ID generálás, hogy profibbnak tűnjön (pl. #8293...)
+  // JAVÍTÁS: Ár formázása 2 tizedesjegyre
+  const formattedTotal = parseFloat(totalParam).toFixed(2);
+
+  // Obfuszkált ID generálás
   const numericOrderId = rawId !== 'UNKNOWN' ? (rawId.replace(/\D/g, '') + '82937102').slice(0, 8) : '--------';
 
   return (
@@ -60,13 +60,13 @@ function ThankYouContent() {
             fill
             className="object-cover opacity-40 grayscale"
             priority
-            quality={60} // Mivel elmosott/sötét, elég az alacsonyabb minőség (gyorsabb betöltés)
-            sizes="100vw" // Fontos a PageSpeed-nek
+            quality={60} 
+            sizes="100vw" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-[#050505]/80"></div>
       </div>
 
-      <GoogleAdsTracking orderId={rawId} total={total} currency={currency} />
+      <GoogleAdsTracking orderId={rawId} total={totalParam} currency={currency} />
 
       {/* 2. ARANY RAGYOGÁS HÁTTÉREFFEKT */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 md:w-[600px] md:h-[600px] bg-[#B8860B]/20 rounded-full blur-[80px] md:blur-[100px] pointer-events-none animate-in fade-in duration-1000"></div>
@@ -105,12 +105,12 @@ function ThankYouContent() {
                 <div className="text-right">
                     <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">{t('total_paid')}</p>
                     <div className="text-2xl md:text-3xl font-sans font-bold text-white leading-none tracking-tight">
-                        €{total}
+                        €{formattedTotal}
                     </div>
                 </div>
             </div>
 
-            {/* TIMELINE - MOBILON IS JÓL OLVASHATÓ */}
+            {/* TIMELINE */}
             <div className="space-y-5 md:space-y-6">
                 <div className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[#B8860B]">

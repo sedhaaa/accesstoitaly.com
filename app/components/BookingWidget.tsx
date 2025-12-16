@@ -8,7 +8,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { 
   Minus, Plus, ArrowRight, Check, Calendar, AlertCircle, Info, 
-  ChevronLeft, User, Mail, Phone, Lock, Shield, Loader2, Flame, CreditCard, XCircle, AlertTriangle
+  ChevronLeft, User, Mail, Phone, Lock, Shield, Loader2, Flame, CreditCard, XCircle, AlertTriangle, Tag // Tag ikon a leárazáshoz
 } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -65,7 +65,7 @@ const StripePaymentForm = ({ total, customerDetails, onSuccess, onError, isProce
       </div>
       {message && <div className="text-red-500 text-sm font-bold bg-red-50 p-3 rounded-lg flex gap-2 animate-pulse"><AlertCircle size={16}/> {message}</div>}
       <button disabled={isProcessing || !stripe || !elements} className="w-full bg-[#1a1a1a] text-white h-14 rounded-xl font-bold tracking-wide flex items-center justify-center gap-3 hover:bg-stone-800 disabled:bg-stone-300 transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] text-lg touch-manipulation">
-        {isProcessing ? <><Loader2 className="animate-spin" size={20}/> {t('buttons.processing')}</> : <>{t('buttons.pay')} €{total} <CreditCard size={20}/></>}
+        {isProcessing ? <><Loader2 className="animate-spin" size={20}/> {t('buttons.processing')}</> : <>{t('buttons.pay')} €{total.toFixed(2)} <CreditCard size={20}/></>}
       </button>
     </form>
   );
@@ -77,10 +77,35 @@ export default function BookingWidget() {
   const locale = useLocale();
   const router = useRouter();
   
+  // --- JAVÍTÁS: AKCIÓS ÁRAK (originalPrice) ---
   const ticketVariants = useMemo(() => [
-    { id: 'lift', name: t('tickets.lift_name'), desc: t('tickets.lift_desc'), price: 26, reduced: 13, highlight: t('tickets.lift_tag') },
-    { id: 'stairs', name: t('tickets.stairs_name'), desc: t('tickets.stairs_desc'), price: 20, reduced: 10, highlight: t('tickets.stairs_tag') },
-    { id: 'duomo', name: t('tickets.duomo_name'), desc: t('tickets.duomo_desc'), price: 15, reduced: 8, highlight: null },
+    { 
+        id: 'lift', 
+        name: t('tickets.lift_name'), 
+        desc: t('tickets.lift_desc'), 
+        price: 35.90, 
+        originalPrice: 42.00, // EREDETI ÁR (ÁTHÚZVA)
+        reduced: 19.90, 
+        highlight: t('tickets.lift_tag') 
+    },
+    { 
+        id: 'stairs', 
+        name: t('tickets.stairs_name'), 
+        desc: t('tickets.stairs_desc'), 
+        price: 29.90, 
+        originalPrice: 35.00, // EREDETI ÁR
+        reduced: 20.90, 
+        highlight: t('tickets.stairs_tag') 
+    },
+    { 
+        id: 'duomo', 
+        name: t('tickets.duomo_name'), 
+        desc: t('tickets.duomo_desc'), 
+        price: 21.90, 
+        originalPrice: 26.00, // EREDETI ÁR
+        reduced: 13.90, 
+        highlight: null 
+    },
   ], [t]);
 
   const [step, setStep] = useState(1);
@@ -93,7 +118,6 @@ export default function BookingWidget() {
   
   const [isProcessing, setIsProcessing] = useState(false); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Itt a definíció, a param opcionális (?)
   const [serverError, setServerError] = useState<{code: string, param?: string} | null>(null);
   
   const [clientSecret, setClientSecret] = useState("");
@@ -120,9 +144,8 @@ export default function BookingWidget() {
     const currentId = selectedVariant.id;
     const updatedVariant = ticketVariants.find(v => v.id === currentId);
     if (updatedVariant) setSelectedVariant(updatedVariant);
-  }, []); 
+  }, []);
 
-  // Ha a felhasználó bármit módosít, eltüntetjük a hibaüzenetet
   useEffect(() => {
     if (serverError) setServerError(null);
   }, [step, selectedDay, time, ticketVariants]);
@@ -168,8 +191,6 @@ export default function BookingWidget() {
 
   const initializePayment = async () => {
     if (!selectedDay) return;
-    
-    console.log("🚀 Fizetés indítása...");
     setIsSubmitting(true);
     setServerError(null);
 
@@ -190,31 +211,24 @@ export default function BookingWidget() {
             body: JSON.stringify(orderData),
         });
         
-        console.log("📡 Szerver válasz státusz:", response.status);
         const result = await response.json();
-        console.log("📦 Szerver válasz adat:", result);
 
         if (!response.ok) {
-            console.log("🛑 Hiba történt, beállítom a serverError-t...");
-            
             if (result.errorCode) {
-                console.log("👉 Specifikus hibakód:", result.errorCode);
                 setServerError({ code: result.errorCode, param: result.errorParam });
             } else {
-                console.log("👉 Nincs hibakód, generikus hiba beállítása.");
                 setServerError({ code: 'generic_error' });
             }
             return;
         }
 
         if (result.clientSecret) {
-            console.log("✅ Sikeres előkészítés, ugrás a Stripe-ra.");
             setClientSecret(result.clientSecret);
             setOrderId(result.orderId); 
             setStep(5);
         }
     } catch (error: any) { 
-        console.error("🔥 CATCH ág futott:", error);
+        console.error(error);
         setServerError({ code: 'generic_error' });
     } finally { 
         setIsSubmitting(false); 
@@ -273,7 +287,7 @@ export default function BookingWidget() {
             </h2>
             <div className="text-right">
                 <div className="text-[8px] md:text-[9px] text-stone-400 uppercase tracking-widest mb-0.5 md:mb-1">{t('total')}</div>
-                <div className="text-xl md:text-2xl font-sans font-bold text-[#1a1a1a] leading-none tracking-tight">€{total}</div>
+                <div className="text-xl md:text-2xl font-sans font-bold text-[#1a1a1a] leading-none tracking-tight">€{total.toFixed(2)}</div>
             </div>
         </div>
       </div>
@@ -281,13 +295,23 @@ export default function BookingWidget() {
       {/* CONTENT */}
       <div className="p-4 md:p-8 min-h-[300px] md:min-h-[320px]">
           
-          {/* STEP 1 */}
+          {/* STEP 1 - JEGY KIVÁLASZTÁS AKCIÓS ÁRAKKAL */}
           {step === 1 && (
             <div key="step1" className="space-y-3 step-animation">
               {ticketVariants.map((variant) => (
                 <div key={variant.id} onClick={() => setSelectedVariant(variant)} className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 relative group active:scale-[0.98] ${selectedVariant.id === variant.id ? 'border-[#B8860B] bg-[#B8860B]/5' : 'border-stone-100 bg-white'}`}>
                   {variant.highlight && <span className={`absolute -top-2 right-4 text-white text-[9px] px-2 py-0.5 rounded uppercase tracking-wider font-bold shadow-sm transition-colors ${selectedVariant.id === variant.id ? 'bg-[#B8860B]' : 'bg-[#1a1a1a]'}`}>{variant.highlight}</span>}
-                  <div className="flex justify-between items-center mb-1"><span className="font-bold text-[#1a1a1a] text-sm md:text-base">{variant.name}</span><span className="font-sans font-bold text-[#B8860B] text-sm md:text-base">€{variant.price}</span></div>
+                  
+                  <div className="flex justify-between items-center mb-1">
+                      <span className="font-bold text-[#1a1a1a] text-sm md:text-base">{variant.name}</span>
+                      
+                      {/* ÁR MEGJELENÍTÉS: Eredeti áthúzva + Új ár */}
+                      <div className="flex flex-col items-end">
+                          <span className="text-[10px] text-stone-400 line-through decoration-red-400 decoration-1">€{variant.originalPrice.toFixed(2)}</span>
+                          <span className="font-sans font-bold text-[#B8860B] text-sm md:text-base leading-none">€{variant.price.toFixed(2)}</span>
+                      </div>
+                  </div>
+                  
                   <p className="text-xs text-stone-500 leading-snug pr-2">{variant.desc}</p>
                 </div>
               ))}
@@ -295,6 +319,7 @@ export default function BookingWidget() {
             </div>
           )}
 
+          {/* STEP 2 */}
           {step === 2 && (
             <div key="step2" className="step-animation">
               <div className="bg-stone-50 p-2 md:p-3 rounded-xl border border-stone-100 mb-4">
@@ -337,6 +362,7 @@ export default function BookingWidget() {
             </div>
           )}
 
+          {/* STEP 3 */}
           {step === 3 && (
             <div key="step3" className="step-animation space-y-6">
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-6 flex items-center gap-4">
@@ -344,16 +370,17 @@ export default function BookingWidget() {
                  <div><p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{t('summary.title')}</p><p className="font-bold text-sm text-[#1a1a1a]">Dec {selectedDay}, {time}</p><p className="text-xs text-stone-500">{selectedVariant.name}</p></div>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-stone-100">
-                <div><p className="font-bold text-[#1a1a1a]">{t('summary.adult')}</p><p className="text-xs text-stone-500">{t('summary.adult_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.price}</p></div>
+                <div><p className="font-bold text-[#1a1a1a]">{t('summary.adult')}</p><p className="text-xs text-stone-500">{t('summary.adult_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.price.toFixed(2)}</p></div>
                 <div className="flex items-center gap-4"><button onClick={() => setAdults(Math.max(0, adults - 1))} className="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center bg-white hover:bg-stone-50 text-[#1a1a1a] transition active:scale-90 touch-manipulation"><Minus size={18}/></button><span className="w-6 text-center font-bold text-lg text-[#1a1a1a]">{adults}</span><button onClick={() => setAdults(adults + 1)} className="w-12 h-12 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center hover:bg-stone-800 transition active:scale-90 touch-manipulation"><Plus size={18}/></button></div>
               </div>
               <div className="flex justify-between items-center">
-                <div><p className="font-bold text-[#1a1a1a]">{t('summary.reduced')}</p><p className="text-xs text-stone-500">{t('summary.reduced_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.reduced}</p></div>
+                <div><p className="font-bold text-[#1a1a1a]">{t('summary.reduced')}</p><p className="text-xs text-stone-500">{t('summary.reduced_desc')}</p><p className="text-sm font-sans font-bold text-[#B8860B]">€{selectedVariant.reduced.toFixed(2)}</p></div>
                 <div className="flex items-center gap-4"><button onClick={() => setReduced(Math.max(0, reduced - 1))} className="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center bg-white hover:bg-stone-50 text-[#1a1a1a] transition active:scale-90 touch-manipulation"><Minus size={18}/></button><span className="w-6 text-center font-bold text-lg text-[#1a1a1a]">{reduced}</span><button onClick={() => setReduced(reduced + 1)} className="w-12 h-12 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center hover:bg-stone-800 transition active:scale-90 touch-manipulation"><Plus size={18}/></button></div>
               </div>
             </div>
           )}
 
+          {/* STEP 4 */}
           {step === 4 && (
             <div key="step4" className="step-animation space-y-4">
                 <div className="bg-[#B8860B]/10 p-4 rounded-xl flex gap-3 items-start mb-4 border border-[#B8860B]/20"><AlertCircle size={18} className="text-[#B8860B] flex-shrink-0 mt-0.5"/>
@@ -381,6 +408,7 @@ export default function BookingWidget() {
             </div>
           )}
 
+          {/* STEP 5 */}
           {step === 5 && clientSecret && (
              <div className="step-animation pb-4">
                 <Elements options={{ clientSecret, locale: locale as any, appearance: { theme: 'stripe', variables: { colorPrimary: '#B8860B', fontFamily: 'sans-serif' } } }} stripe={stripePromise}>
@@ -394,7 +422,7 @@ export default function BookingWidget() {
       {step < 5 && (
       <div className="p-5 md:p-8 border-t border-stone-100 bg-white rounded-b-3xl">
         
-        {/* ÚJ: DIZÁJNOS SZERVER HIBA MEGJELENÍTÉS */}
+        {/* SZERVER HIBA */}
         {serverError && (
             <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-3 error-anim">
                 <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />

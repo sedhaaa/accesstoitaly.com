@@ -9,11 +9,10 @@ import dynamic from 'next/dynamic';
 import { 
   Star, ChevronDown, Menu, X,
   Landmark, Award, Sun, Gem, MapPin, Train, Bus,
-  Quote, Minus, Plus, Loader2
+  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon, ArrowRight
 } from 'lucide-react';
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
-// A Loading skeleton pontos mérete kulcsfontosságú a CLS (ugrálás) elkerüléséhez
 const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   loading: () => (
     <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
@@ -24,14 +23,12 @@ const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   ssr: false
 });
 
-// --- STATIKUS ELEMEK ---
-const GoogleLogo = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0" aria-hidden="true">
-    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-  </svg>
+// --- GOOGLE LOGÓ HELYETT TRUST BADGE ---
+const TrustBadge = () => (
+  <div className="flex items-center gap-1 bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+    <CheckCircle size={12} className="text-green-500" />
+    <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Verified Reviews</span>
+  </div>
 );
 
 const FLAGS: Record<string, React.ReactNode> = {
@@ -121,24 +118,36 @@ export default function Home() {
     }
   }, [mobileMenuOpen]);
 
+  // --- GOOGLE ADS & SEO SCHEMA (Nagyon Fontos!) ---
+  // Itt soroljuk fel az összes lehetséges jegyet és árat.
+  // Ez "AggregateOffer", ami megmutatja a Google-nek a teljes skálát.
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Product",
-        "name": "Duomo di Milano: Rooftop & Cathedral Ticket",
+        "name": "Duomo di Milano: Rooftop, Cathedral & Museum Tickets",
         "description": t('hero.description'),
         "image": "https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg",
-        "offers": {
-          "@type": "Offer",
-          "priceCurrency": "EUR",
-          "price": "26.00",
-          "availability": "https://schema.org/InStock"
-        },
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.9",
           "reviewCount": "2450"
+        },
+        "offers": {
+          "@type": "AggregateOffer",
+          "lowPrice": "13.90", // Legolcsóbb (Duomo Reduced)
+          "highPrice": "35.90", // Legdrágább (Lift Adult)
+          "priceCurrency": "EUR",
+          "offerCount": "6",
+          "offers": [
+            { "@type": "Offer", "name": "Combo Lift - Adult", "price": "35.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Combo Lift - Reduced", "price": "19.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Combo Stairs - Adult", "price": "29.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Combo Stairs - Reduced", "price": "20.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Cathedral + Museum - Adult", "price": "21.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Cathedral + Museum - Reduced", "price": "13.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" }
+          ]
         }
       }
     ]
@@ -152,14 +161,11 @@ export default function Home() {
   ];
 
   // CLOUDINARY TURBÓ URL
-  // Ez a link közvetlenül a szerverről kéri a kisméretű, optimalizált verziót (1000px széles, auto quality, auto format)
-  // Így a Next.js Image-nek nem kell gondolkodnia, csak letöltenie.
   const HERO_IMAGE_OPTIMIZED = "https://res.cloudinary.com/dldgqjxkn/image/upload/c_limit,w_1000,q_auto,f_auto/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg";
 
   return (
     <main className="min-h-screen text-[#1a1a1a] font-sans selection:bg-[#B8860B] selection:text-white overflow-x-hidden">
       
-      {/* SEBESSÉG OPTIMALIZÁLÁS: Preconnect a Cloudinary-hoz */}
       <link rel="preconnect" href="https://res.cloudinary.com" />
       
       <Script
@@ -169,8 +175,8 @@ export default function Home() {
       />
 
       {/* --- DISCLAIMER --- */}
-      <div className="bg-[#1a1a1a] text-white/80 text-[9px] md:text-[10px] py-3 text-center font-medium px-4 relative z-[40] border-b border-white/10">
-        <p className="max-w-5xl mx-auto leading-relaxed opacity-90">
+      <div className="bg-[#1a1a1a] text-white/90 text-[11px] md:text-xs py-3 text-center font-medium px-4 relative z-[40] border-b border-white/10">
+        <p className="max-w-5xl mx-auto leading-relaxed opacity-95">
           {t('disclaimer')}
         </p>
       </div>
@@ -265,11 +271,6 @@ export default function Home() {
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
-          {/* OPTIMALIZÁLT HERO KÉP: 
-             1. unoptimized={true} -> Nem használjuk a Next.js szervert átméretezésre (lassú lehet)
-             2. src -> Közvetlen Cloudinary "c_limit,w_1000,q_auto" URL
-             3. fetchPriority="high" -> Azonnal töltődik
-          */}
           <Image 
             src={HERO_IMAGE_OPTIMIZED} 
             alt="Duomo di Milano Facade at Sunset" 
@@ -299,7 +300,7 @@ export default function Home() {
             </p>
             
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-lg w-fit border border-white/10">
-                <GoogleLogo />
+                <TrustBadge />
                 <div>
                     <div className="flex text-[#B8860B] text-xs">
                         {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="currentColor" className="text-[#B8860B]" aria-hidden="true"/>)}
@@ -318,6 +319,66 @@ export default function Home() {
         
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce hidden md:block">
           <ChevronDown size={24} className="mx-auto" />
+        </div>
+      </section>
+
+      {/* --- ÚJ SZEKCIÓ: TICKET COMPARISON (A Hero alatt) --- */}
+      <section className="py-12 md:py-20 px-6 md:px-12 bg-white relative z-10 -mt-2">
+        <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10">
+                <h2 className="font-serif text-3xl md:text-4xl text-[#1a1a1a] mb-2">Choose Your Experience</h2>
+                <p className="text-stone-500 text-sm">Select the perfect ticket option for your visit</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* 1. KÁRTYA: COMBO LIFT (Kiemelt) */}
+                <div className="border-2 border-[#B8860B] bg-[#fffbf2] rounded-2xl p-6 relative shadow-lg transform md:-translate-y-2">
+                    <div className="absolute top-0 right-0 bg-[#B8860B] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg uppercase tracking-wider">Most Popular</div>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Combo Lift</h3>
+                    <p className="text-xs text-stone-500 mb-4">Fast Track Access via Elevator</p>
+                    <div className="text-2xl font-bold text-[#B8860B] mb-6">€35.90</div>
+                    
+                    <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Rooftop via Lift</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                    </ul>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full bg-[#B8860B] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#9a7009] transition">Select This Ticket</button>
+                </div>
+
+                {/* 2. KÁRTYA: COMBO STAIRS */}
+                <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Combo Stairs</h3>
+                    <p className="text-xs text-stone-500 mb-4">Active Route (~250 Steps)</p>
+                    <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€29.90</div>
+                    
+                    <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Rooftop via Stairs</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                    </ul>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">Select This Ticket</button>
+                </div>
+
+                {/* 3. KÁRTYA: CATHEDRAL ONLY */}
+                <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Duomo + Museum</h3>
+                    <p className="text-xs text-stone-500 mb-4">No Rooftop Access</p>
+                    <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€21.90</div>
+                    
+                    <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2 text-sm text-stone-400 line-through"><XIcon size={16} className="text-stone-300 mt-0.5 shrink-0"/> No Rooftop Access</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                    </ul>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">Select This Ticket</button>
+                </div>
+
+            </div>
         </div>
       </section>
 
@@ -503,7 +564,7 @@ export default function Home() {
       <section id="reviews" className="py-16 md:py-20 px-6 md:px-12 bg-white border-t border-gray-200 relative z-10">
          <div className="max-w-7xl mx-auto">
              <div className="flex items-center justify-center gap-3 mb-12">
-                 <GoogleLogo />
+                 <TrustBadge />
                  <h3 className="font-serif text-3xl text-[#1a1a1a]">{t('reviews.title')}</h3>
              </div>
              
@@ -522,7 +583,6 @@ export default function Home() {
                              <span className="block text-xs font-bold text-[#1a1a1a]">Sarah J.</span>
                              <span className="text-[10px] text-gray-500">December 2024</span>
                          </div>
-                         <div className="ml-auto"><GoogleLogo/></div>
                      </div>
                  </div>
 
@@ -540,7 +600,6 @@ export default function Home() {
                              <span className="block text-xs font-bold text-[#1a1a1a]">Mark D.</span>
                              <span className="text-[10px] text-gray-500">January 2025</span>
                          </div>
-                         <div className="ml-auto"><GoogleLogo/></div>
                      </div>
                  </div>
 
@@ -558,7 +617,6 @@ export default function Home() {
                              <span className="block text-xs font-bold text-[#1a1a1a]">Elena R.</span>
                              <span className="text-[10px] text-gray-500">November 2024</span>
                          </div>
-                         <div className="ml-auto"><GoogleLogo/></div>
                      </div>
                  </div>
              </div>
@@ -659,4 +717,3 @@ export default function Home() {
     </main>
   );
 }
- 

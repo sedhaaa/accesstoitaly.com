@@ -34,7 +34,7 @@ type AvailabilityRule = {
 
 const STANDARD_TIMES = ["09:00", "09:30", "10:00", "10:30", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-// --- SEGÉDFÜGGVÉNYEK (Kiemelve, hogy ne generálódjanak újra) ---
+// --- SEGÉDFÜGGVÉNYEK ---
 const formatDateTime = (isoString: string) => {
     return new Date(isoString).toLocaleString('hu-HU', { 
         year: 'numeric', month: 'short', day: 'numeric', 
@@ -82,10 +82,9 @@ function AdminContent() {
     blocked_times: []
   });
 
-  // --- DATA FETCHING (Stabilizálva) ---
+  // --- DATA FETCHING ---
   const fetchData = useCallback(async () => {
     setLoading(true);
-    // Limitáljuk 500-ra a lekérést a gyorsabb betöltésért, ha nagyon sok rendelés lenne
     const { data: orderData } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(500);
     if (orderData) setOrders(orderData);
 
@@ -124,9 +123,7 @@ function AdminContent() {
     await supabase.auth.signOut();
   };
 
-  // --- MEMOIZED CALCULATIONS (Teljesítmény optimalizálás!) ---
-  // Ez csak akkor fut le, ha változik a keresés vagy a rendelések listája.
-  // Nem lassítja a UI-t minden renderelésnél.
+  // --- MEMOIZED CALCULATIONS ---
   const filteredOrders = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
     return orders.filter(o => 
@@ -144,7 +141,6 @@ function AdminContent() {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
   
-  // Memoized date calculations
   const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
   const firstDayIndex = useMemo(() => {
     const day = new Date(currentYear, currentMonth, 1).getDay();
@@ -303,7 +299,8 @@ function AdminContent() {
                         </div>
                         <div className="bg-[#111] p-4 rounded-xl border border-white/10 w-full md:w-40 shadow-lg">
                             <p className="text-[10px] text-stone-500 uppercase font-bold">Bevétel</p>
-                            <p className="text-2xl font-serif text-[#B8860B]">€{totalRevenue}</p>
+                            {/* JAVÍTÁS: Ár formázása 2 tizedesjegyre a bevételnél is */}
+                            <p className="text-2xl font-serif text-[#B8860B]">€{totalRevenue.toFixed(2)}</p>
                         </div>
                     </div>
                     <div className="relative flex-grow max-w-md">
@@ -314,7 +311,7 @@ function AdminContent() {
                     </div>
                 </div>
                 
-                {/* --- RENDELÉSEK LISTÁJA (Most már a filteredOrders-t használja) --- */}
+                {/* --- RENDELÉSEK LISTÁJA --- */}
                 <div className="grid grid-cols-1 gap-4">
                     {filteredOrders.map((order) => {
                         const ticketDetails = getTicketDetails(order.ticket_type);
@@ -322,7 +319,6 @@ function AdminContent() {
                         return (
                         <div key={order.id} className="bg-[#111] hover:bg-[#161616] transition-all p-0 rounded-xl border border-white/5 relative overflow-hidden shadow-md hover:shadow-xl hover:border-white/10 group">
                             
-                            {/* Oldalsó csík státusz szerint */}
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${order.status === 'paid' ? 'bg-green-500' : 'bg-[#B8860B]'}`}></div>
                             
                             {/* FEJLÉC */}
@@ -350,7 +346,8 @@ function AdminContent() {
                                 <div className="text-right">
                                     <div className="flex items-center justify-end gap-2 text-[#B8860B]">
                                         <CreditCard size={16} />
-                                        <span className="text-2xl font-bold font-sans">€{order.total_price}</span>
+                                        {/* JAVÍTÁS: Ár formázása 2 tizedesjegyre */}
+                                        <span className="text-2xl font-bold font-sans">€{order.total_price.toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -360,7 +357,6 @@ function AdminContent() {
                                 
                                 {/* 1. OSZLOP: IDŐPONTOK */}
                                 <div className="bg-black/20 p-4 rounded-lg border border-white/5 space-y-4">
-                                    {/* Látogatás */}
                                     <div className="flex items-start gap-3">
                                         <div className="p-2 bg-[#B8860B]/10 rounded text-[#B8860B]">
                                             <CalendarCheck size={18} />
@@ -371,7 +367,6 @@ function AdminContent() {
                                             <p className="text-[#B8860B] font-bold text-sm mt-0.5">{order.visit_time} óra</p>
                                         </div>
                                     </div>
-                                    {/* Rendelés leadva */}
                                     <div className="flex items-start gap-3 pt-3 border-t border-white/5">
                                         <div className="p-2 bg-stone-800 rounded text-stone-400">
                                             <CalendarClock size={16} />
@@ -387,13 +382,11 @@ function AdminContent() {
                                 <div className="space-y-3">
                                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Vásárolt Jegyek</p>
                                     
-                                    {/* Jegy típus kártya */}
                                     <div className={`p-3 rounded-lg border flex items-center gap-3 ${ticketDetails.color}`}>
                                         <Ticket size={18} />
                                         <span className="text-xs font-bold uppercase tracking-wider">{ticketDetails.label}</span>
                                     </div>
 
-                                    {/* Mennyiségek */}
                                     <div className="grid grid-cols-2 gap-2">
                                         {order.quantity_adult > 0 && (
                                             <div className="bg-white/5 p-2 rounded border border-white/5 text-center">
