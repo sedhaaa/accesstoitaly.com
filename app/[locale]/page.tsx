@@ -13,13 +13,12 @@ import {
 } from 'lucide-react';
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
-// SSR false: Kliens oldalon tölt be.
-// Loading: FIX magasságú doboz (min-h-[580px]), hogy NE ugráljon a tartalom betöltéskor (CLS védelem).
+// A Loading skeleton pontos mérete kulcsfontosságú a CLS (ugrálás) elkerüléséhez
 const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   loading: () => (
     <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
        <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
-       <p className="text-[10px] uppercase tracking-widest font-medium opacity-70">Loading Availability...</p>
+       <p className="text-[10px] uppercase tracking-widest font-medium opacity-70">Loading Calendar...</p>
     </div>
   ),
   ssr: false
@@ -152,8 +151,16 @@ export default function Home() {
     { question: t('info.faq4_q'), answer: t('info.faq4_a') }
   ];
 
+  // CLOUDINARY TURBÓ URL
+  // Ez a link közvetlenül a szerverről kéri a kisméretű, optimalizált verziót (1000px széles, auto quality, auto format)
+  // Így a Next.js Image-nek nem kell gondolkodnia, csak letöltenie.
+  const HERO_IMAGE_OPTIMIZED = "https://res.cloudinary.com/dldgqjxkn/image/upload/c_limit,w_1000,q_auto,f_auto/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg";
+
   return (
     <main className="min-h-screen text-[#1a1a1a] font-sans selection:bg-[#B8860B] selection:text-white overflow-x-hidden">
+      
+      {/* SEBESSÉG OPTIMALIZÁLÁS: Preconnect a Cloudinary-hoz */}
+      <link rel="preconnect" href="https://res.cloudinary.com" />
       
       <Script
         id="structured-data"
@@ -185,7 +192,6 @@ export default function Home() {
                 <a href="#info" className="hover:text-[#B8860B] transition-colors duration-300 py-2 focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">{t('nav.info')}</a>
             </div>
 
-            {/* Language Dropdown */}
             <div className="relative" ref={langMenuRef}>
                 <button 
                     onClick={() => setLangMenuOpen(!langMenuOpen)}
@@ -225,19 +231,54 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* --- MOBILE MENU --- */}
+      {mobileMenuOpen && (
+        <>
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[190] animate-in fade-in duration-300"
+              onClick={() => setMobileMenuOpen(false)}
+            ></div>
+
+            <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-[#1a1a1a] z-[200] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-white/10">
+                <div className="flex justify-end p-6">
+                    <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" className="text-white hover:text-[#B8860B] transition focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">
+                        <X size={32} />
+                    </button>
+                </div>
+
+                <div className="flex flex-col items-center justify-center flex-grow space-y-8 p-6">
+                    <a href="#history" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.history')}</a>
+                    <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.experience')}</a>
+                    <a href="#info" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.info')}</a>
+                    <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.reviews')}</a>
+                    
+                    <div className="pt-8 w-full">
+                        <button onClick={() => {setMobileMenuOpen(false); window.scrollTo({top:0, behavior:'smooth'})}} className="w-full bg-[#B8860B] text-white py-4 rounded-xl font-bold uppercase tracking-wider text-sm shadow-lg hover:bg-[#9a7009] transition">
+                            {t('nav.bookBtn')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+      )}
+
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
-          {/* OPTIMALIZÁLT HERO KÉP */}
+          {/* OPTIMALIZÁLT HERO KÉP: 
+             1. unoptimized={true} -> Nem használjuk a Next.js szervert átméretezésre (lassú lehet)
+             2. src -> Közvetlen Cloudinary "c_limit,w_1000,q_auto" URL
+             3. fetchPriority="high" -> Azonnal töltődik
+          */}
           <Image 
-            src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
+            src={HERO_IMAGE_OPTIMIZED} 
             alt="Duomo di Milano Facade at Sunset" 
             fill
             priority={true}
             fetchPriority="high" 
+            unoptimized={true} 
             className="object-cover"
             sizes="100vw"
-            quality={60} 
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/95 via-[#1a1a1a]/50 to-[#1a1a1a]/20"></div>
         </div>
@@ -249,12 +290,11 @@ export default function Home() {
               <Star className="text-[#B8860B] w-4 h-4 fill-current" aria-hidden="true"/>
               <span className="text-[#B8860B] text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{t('hero.badge')}</span>
             </div>
-            {/* HERO SZÖVEG: Animációk kikapcsolva az azonnali megjelenésért (LCP) */}
             <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl leading-[0.9] drop-shadow-2xl">
               {t('hero.title')} <br/>
               <span className="italic font-light opacity-90 ml-2 md:ml-4">{t('hero.subtitle')}</span>
             </h1>
-            <p className="text-base md:text-lg text-white/90 max-w-lg font-light leading-relaxed drop-shadow-md border-l-2 border-[#B8860B] pl-4 md:pl-6">
+            <p className="text-base md:text-lg text-white/90 max-w-lg font-light leading-relaxed pl-4 md:pl-6 border-l-2 border-[#B8860B]">
               {t('hero.description')}
             </p>
             
@@ -619,4 +659,3 @@ export default function Home() {
     </main>
   );
 }
- 
