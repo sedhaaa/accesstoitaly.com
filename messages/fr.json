@@ -317,7 +317,25 @@
   "faq_4_a": "Non. Vous pouvez présenter le QR code directement sur votre smartphone à l'entrée.",
   "office_title": "Adresse du bureau",
   "office_note": "Veuillez noter : Cette adresse est uniquement à des fins administratives. Aucun billet n'est vendu sur place."
-}
+},
+"comparison": {
+    "title": "Choisissez Votre Expérience",
+    "subtitle": "Sélectionnez l'option parfaite pour votre visite",
+    "btn_select": "Sélectionner ce Billet",
+    "lift_title": "Combo Ascenseur",
+    "lift_badge": "Le Plus Populaire",
+    "lift_desc": "Accès Rapide par Ascenseur",
+    "stairs_title": "Combo Escaliers",
+    "stairs_desc": "Route Active (~250 Marches)",
+    "duomo_title": "Duomo + Musée",
+    "duomo_desc": "Pas d'Accès aux Terrasses",
+    "feat_rooftop_lift": "Terrasses par Ascenseur",
+    "feat_rooftop_stairs": "Terrasses par Escaliers",
+    "feat_no_rooftop": "Pas d'Accès Terrasses",
+    "feat_cathedral": "Intérieur de la Cathédrale",
+    "feat_museum": "Musée du Duomo",
+    "feat_church": "Église San Gottardo"
+  }
 }
 
 

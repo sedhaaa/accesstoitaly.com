@@ -149,11 +149,7 @@
       "generic_error": "Qualcosa è andato storto. Riprova."
     }
   },
-  "errors": {
-      "sold_out_day": "Siamo spiacenti, questo giorno è appena esaurito.",
-      "sold_out_time": "Siamo spiacenti, l'orario {time} non è più disponibile.",
-      "generic_error": "Qualcosa è andato storto. Riprova."
-    },
+  
   "ThankYou": {
     "title": "Pagamento Riuscito",
     "subtitle": "La tua prenotazione è confermata.",
@@ -323,8 +319,27 @@
   "faq_4_a": "No. Puoi mostrare il codice QR direttamente dal tuo smartphone ai tornelli d'ingresso.",
   "office_title": "Indirizzo Ufficio",
   "office_note": "Nota bene: Questo indirizzo è solo per scopi amministrativi. Non si vendono biglietti in questa sede."
-}
-}
+},
+"comparison": {
+    "title": "Scegli la tua Esperienza",
+    "subtitle": "Seleziona l'opzione perfetta per la tua visita",
+    "btn_select": "Seleziona Biglietto",
+    "lift_title": "Combo Ascensore",
+    "lift_badge": "Più Popolare",
+    "lift_desc": "Accesso Rapido via Ascensore",
+    "stairs_title": "Combo Scale",
+    "stairs_desc": "Percorso Attivo (~250 Scalini)",
+    "duomo_title": "Duomo + Museo",
+    "duomo_desc": "Nessun Accesso alle Terrazze",
+    "feat_rooftop_lift": "Terrazze in Ascensore",
+    "feat_rooftop_stairs": "Terrazze a Piedi",
+    "feat_no_rooftop": "Nessun Accesso Terrazze",
+    "feat_cathedral": "Interno Cattedrale",
+    "feat_museum": "Museo del Duomo",
+    "feat_church": "Chiesa di S. Gottardo"
+  }
+  }
+
 
 
    

@@ -9,11 +9,11 @@ import dynamic from 'next/dynamic';
 import { 
   Star, ChevronDown, Menu, X,
   Landmark, Award, Sun, Gem, MapPin, Train, Bus,
-  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon, ArrowRight
+  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon
 } from 'lucide-react';
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
-const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
+const BookingWidget = dynamic(() => import('@/components/BookingWidget'), {
   loading: () => (
     <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
        <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
@@ -118,9 +118,7 @@ export default function Home() {
     }
   }, [mobileMenuOpen]);
 
-  // --- GOOGLE ADS & SEO SCHEMA (Nagyon Fontos!) ---
-  // Itt soroljuk fel az összes lehetséges jegyet és árat.
-  // Ez "AggregateOffer", ami megmutatja a Google-nek a teljes skálát.
+  // --- GOOGLE ADS & SEO SCHEMA ---
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -136,8 +134,8 @@ export default function Home() {
         },
         "offers": {
           "@type": "AggregateOffer",
-          "lowPrice": "13.90", // Legolcsóbb (Duomo Reduced)
-          "highPrice": "35.90", // Legdrágább (Lift Adult)
+          "lowPrice": "13.90",
+          "highPrice": "35.90",
           "priceCurrency": "EUR",
           "offerCount": "6",
           "offers": [
@@ -322,60 +320,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- ÚJ SZEKCIÓ: TICKET COMPARISON (A Hero alatt) --- */}
+      {/* --- ÚJ SZEKCIÓ: TICKET COMPARISON (Fordítva) --- */}
       <section className="py-12 md:py-20 px-6 md:px-12 bg-white relative z-10 -mt-2">
         <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
-                <h2 className="font-serif text-3xl md:text-4xl text-[#1a1a1a] mb-2">Choose Your Experience</h2>
-                <p className="text-stone-500 text-sm">Select the perfect ticket option for your visit</p>
+                <h2 className="font-serif text-3xl md:text-4xl text-[#1a1a1a] mb-2">{t('comparison.title')}</h2>
+                <p className="text-stone-500 text-sm">{t('comparison.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                {/* 1. KÁRTYA: COMBO LIFT (Kiemelt) */}
+                {/* 1. KÁRTYA: COMBO LIFT */}
                 <div className="border-2 border-[#B8860B] bg-[#fffbf2] rounded-2xl p-6 relative shadow-lg transform md:-translate-y-2">
-                    <div className="absolute top-0 right-0 bg-[#B8860B] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg uppercase tracking-wider">Most Popular</div>
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Combo Lift</h3>
-                    <p className="text-xs text-stone-500 mb-4">Fast Track Access via Elevator</p>
+                    <div className="absolute top-0 right-0 bg-[#B8860B] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg uppercase tracking-wider">{t('comparison.lift_badge')}</div>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.lift_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{t('comparison.lift_desc')}</p>
                     <div className="text-2xl font-bold text-[#B8860B] mb-6">€35.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Rooftop via Lift</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_rooftop_lift')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full bg-[#B8860B] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#9a7009] transition">Select This Ticket</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full bg-[#B8860B] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#9a7009] transition">{t('comparison.btn_select')}</button>
                 </div>
 
                 {/* 2. KÁRTYA: COMBO STAIRS */}
                 <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Combo Stairs</h3>
-                    <p className="text-xs text-stone-500 mb-4">Active Route (~250 Steps)</p>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.stairs_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{t('comparison.stairs_desc')}</p>
                     <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€29.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Rooftop via Stairs</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_rooftop_stairs')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">Select This Ticket</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{t('comparison.btn_select')}</button>
                 </div>
 
                 {/* 3. KÁRTYA: CATHEDRAL ONLY */}
                 <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">Duomo + Museum</h3>
-                    <p className="text-xs text-stone-500 mb-4">No Rooftop Access</p>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.duomo_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{t('comparison.duomo_desc')}</p>
                     <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€21.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-stone-400 line-through"><XIcon size={16} className="text-stone-300 mt-0.5 shrink-0"/> No Rooftop Access</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Cathedral Interior</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Duomo Museum</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> Church of St. Gottardo</li>
+                        <li className="flex items-start gap-2 text-sm text-stone-400 line-through"><XIcon size={16} className="text-stone-300 mt-0.5 shrink-0"/> {t('comparison.feat_no_rooftop')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">Select This Ticket</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{t('comparison.btn_select')}</button>
                 </div>
 
             </div>

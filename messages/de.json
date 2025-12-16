@@ -327,7 +327,25 @@
   "faq_4_a": "Nein. Sie können den QR-Code direkt auf Ihrem Smartphone am Eingang vorzeigen.",
   "office_title": "Büroadresse",
   "office_note": "Bitte beachten: Diese Adresse dient nur Verwaltungszwecken. Hier werden keine Tickets verkauft."
-}
+},
+"comparison": {
+    "title": "Wählen Sie Ihr Erlebnis",
+    "subtitle": "Wählen Sie die perfekte Ticketoption",
+    "btn_select": "Ticket Auswählen",
+    "lift_title": "Kombo Aufzug",
+    "lift_badge": "Beliebteste",
+    "lift_desc": "Schneller Zugang mit Aufzug",
+    "stairs_title": "Kombo Treppe",
+    "stairs_desc": "Aktive Route (~250 Stufen)",
+    "duomo_title": "Dom + Museum",
+    "duomo_desc": "Kein Zugang zur Terrasse",
+    "feat_rooftop_lift": "Dachterrasse per Aufzug",
+    "feat_rooftop_stairs": "Dachterrasse zu Fuß",
+    "feat_no_rooftop": "Kein Zugang zur Terrasse",
+    "feat_cathedral": "Dom Innenraum",
+    "feat_museum": "Dom Museum",
+    "feat_church": "Kirche St. Gottardo"
+  },
 }
 
 

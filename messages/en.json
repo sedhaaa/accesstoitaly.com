@@ -319,5 +319,23 @@
     "faq_4_a": "No. You can show the QR code directly from your smartphone at the entrance turnstiles.",
     "office_title": "Office Address",
     "office_note": "Please note: This address is for administrative purposes only. No tickets are sold at this location."
+  },
+  "comparison": {
+    "title": "Choose Your Experience",
+    "subtitle": "Select the perfect ticket option for your visit",
+    "btn_select": "Select This Ticket",
+    "lift_title": "Combo Lift",
+    "lift_badge": "Most Popular",
+    "lift_desc": "Fast Track Access via Elevator",
+    "stairs_title": "Combo Stairs",
+    "stairs_desc": "Active Route (~250 Steps)",
+    "duomo_title": "Duomo + Museum",
+    "duomo_desc": "No Rooftop Access",
+    "feat_rooftop_lift": "Rooftop via Lift",
+    "feat_rooftop_stairs": "Rooftop via Stairs",
+    "feat_no_rooftop": "No Rooftop Access",
+    "feat_cathedral": "Cathedral Interior",
+    "feat_museum": "Duomo Museum",
+    "feat_church": "Church of St. Gottardo"
   }
-}
+  }
