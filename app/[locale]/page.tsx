@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 // --- NEHÉZ KOMPONENS IMPORTÁLÁSA ---
-const BookingWidgetComponent = dynamic(() => import('@/components/BookingWidget'), {
+const BookingWidgetComponent = dynamic(() => import('../components/BookingWidget'), {
   ssr: false,
 });
 
@@ -681,3 +681,4 @@ export default function Home() {
     </main>
   );
 }
+ 
