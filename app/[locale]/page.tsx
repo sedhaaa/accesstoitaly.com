@@ -25,7 +25,7 @@ const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
 
 // --- STATIKUS ELEMEK ---
 const GoogleLogo = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0" aria-hidden="true">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -35,7 +35,7 @@ const GoogleLogo = () => (
 
 const FLAGS: Record<string, React.ReactNode> = {
   en: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
       <path fill="#012169" d="M0 0h640v480H0z"/>
       <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
       <path fill="#C8102E" d="M424 294L640 457v23h-67L368 334 146 500H79l207-156-231-177h68l167 127L515 0h80L373 173l267 199v-78H424zM260 216L0 23v63l179 130H260z"/>
@@ -44,7 +44,7 @@ const FLAGS: Record<string, React.ReactNode> = {
     </svg>
   ),
   it: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
       <g fillRule="evenodd" strokeWidth="1pt">
         <path fill="#FFF" d="M0 0h640v480H0z"/>
         <path fill="#009246" d="M0 0h213.3v480H0z"/>
@@ -53,21 +53,21 @@ const FLAGS: Record<string, React.ReactNode> = {
     </svg>
   ),
   de: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
       <path fill="#ffce00" d="M0 320h640v160H0z"/>
       <path fill="#000" d="M0 0h640v160H0z"/>
       <path fill="#d00" d="M0 160h640v160H0z"/>
     </svg>
   ),
   fr: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
       <path fill="#FFF" d="M0 0h640v480H0z"/>
       <path fill="#002395" d="M0 0h213.3v480H0z"/>
       <path fill="#ED2939" d="M426.7 0H640v480H426.7z"/>
     </svg>
   ),
   es: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
       <path fill="#AA151B" d="M0 0h640v480H0z"/>
       <path fill="#F1BF00" d="M0 120h640v240H0z"/>
     </svg>
@@ -120,6 +120,7 @@ export default function Home() {
     }
   }, [mobileMenuOpen]);
 
+  // SEO Schema
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -178,16 +179,18 @@ export default function Home() {
           
           <div className="flex items-center gap-4 md:gap-6">
             <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-white/95 drop-shadow-md">
-                <a href="#history" className="hover:text-[#B8860B] transition-colors duration-300 py-2">{t('nav.history')}</a>
-                <a href="#experience" className="hover:text-[#B8860B] transition-colors duration-300 py-2">{t('nav.experience')}</a>
-                <a href="#info" className="hover:text-[#B8860B] transition-colors duration-300 py-2">{t('nav.info')}</a>
+                <a href="#history" className="hover:text-[#B8860B] transition-colors duration-300 py-2 focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">{t('nav.history')}</a>
+                <a href="#experience" className="hover:text-[#B8860B] transition-colors duration-300 py-2 focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">{t('nav.experience')}</a>
+                <a href="#info" className="hover:text-[#B8860B] transition-colors duration-300 py-2 focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">{t('nav.info')}</a>
             </div>
 
             {/* Language Dropdown */}
             <div className="relative" ref={langMenuRef}>
                 <button 
                     onClick={() => setLangMenuOpen(!langMenuOpen)}
-                    className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition active:scale-95 z-[60]"
+                    aria-label="Change language"
+                    aria-expanded={langMenuOpen}
+                    className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition active:scale-95 z-[60] focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
                 >
                     {FLAGS[locale]}
                     <span className="text-[10px] font-bold text-white uppercase hidden md:block">{locale}</span>
@@ -211,8 +214,9 @@ export default function Home() {
             </div>
 
             <button 
-                className="md:hidden text-white z-[60] p-1"
+                className="md:hidden text-white z-[60] p-1 focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded"
                 onClick={() => setMobileMenuOpen(true)}
+                aria-label="Open main menu"
             >
                 <Menu size={28} />
             </button>
@@ -230,7 +234,7 @@ export default function Home() {
 
             <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-[#1a1a1a] z-[200] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-white/10">
                 <div className="flex justify-end p-6">
-                    <button onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-[#B8860B] transition">
+                    <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" className="text-white hover:text-[#B8860B] transition focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">
                         <X size={32} />
                     </button>
                 </div>
@@ -254,7 +258,6 @@ export default function Home() {
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
-          {/* OPTIMALIZÁLT HERO KÉP: fetchPriority='high', quality=60 */}
           <Image 
             src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
             alt="Duomo di Milano Facade at Sunset" 
@@ -270,10 +273,9 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full pt-8 md:pt-12 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center">
           
-          {/* JAVÍTÁS: Nincs 'animate-in' mobilon, csak desktopon (md:animate-in), így azonnal látszik a szöveg */}
-          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8 md:animate-in md:slide-in-from-left-4 md:fade-in md:duration-1000">
+          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8 animate-in slide-in-from-left-4 fade-in duration-1000">
             <div className="inline-flex items-center gap-3 border-b border-[#B8860B] pb-2">
-              <Star className="text-[#B8860B] w-4 h-4 fill-current"/>
+              <Star className="text-[#B8860B] w-4 h-4 fill-current" aria-hidden="true"/>
               <span className="text-[#B8860B] text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{t('hero.badge')}</span>
             </div>
             <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl leading-[0.9] drop-shadow-2xl">
@@ -288,14 +290,14 @@ export default function Home() {
                 <GoogleLogo />
                 <div>
                     <div className="flex text-[#B8860B] text-xs">
-                        {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="currentColor" className="text-[#B8860B]"/>)}
+                        {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="currentColor" className="text-[#B8860B]" aria-hidden="true"/>)}
                     </div>
                     <p className="text-[10px] text-white font-medium">{t('hero.ratingText')}</p>
                 </div>
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end md:animate-in md:slide-in-from-right-4 md:fade-in md:duration-1000 md:delay-200">
+          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end animate-in slide-in-from-right-4 fade-in duration-1000 delay-200">
             <div className="w-full max-w-md">
                <BookingWidget />
             </div>
@@ -360,19 +362,19 @@ export default function Home() {
          <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-                  <Landmark className="mx-auto text-[#B8860B] mb-6" size={48}/>
+                  <Landmark className="mx-auto text-[#B8860B] mb-6" size={48} aria-hidden="true"/>
                   <h3 className="font-serif text-2xl mb-4 text-[#1a1a1a]">{t('features.marble_title')}</h3>
-                  <p className="text-sm text-[#1a1a1a]/70 leading-relaxed">{t('features.marble_desc')}</p>
+                  <p className="text-sm text-[#1a1a1a]/80 leading-relaxed font-medium">{t('features.marble_desc')}</p>
                </div>
                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-                  <Award className="mx-auto text-[#B8860B] mb-6" size={48}/>
+                  <Award className="mx-auto text-[#B8860B] mb-6" size={48} aria-hidden="true"/>
                   <h3 className="font-serif text-2xl mb-4 text-[#1a1a1a]">{t('features.statues_title')}</h3>
-                  <p className="text-sm text-[#1a1a1a]/70 leading-relaxed">{t('features.statues_desc')}</p>
+                  <p className="text-sm text-[#1a1a1a]/80 leading-relaxed font-medium">{t('features.statues_desc')}</p>
                </div>
                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-                  <Sun className="mx-auto text-[#B8860B] mb-6" size={48}/>
+                  <Sun className="mx-auto text-[#B8860B] mb-6" size={48} aria-hidden="true"/>
                   <h3 className="font-serif text-2xl mb-4 text-[#1a1a1a]">{t('features.madonnina_title')}</h3>
-                  <p className="text-sm text-[#1a1a1a]/70 leading-relaxed">{t('features.madonnina_desc')}</p>
+                  <p className="text-sm text-[#1a1a1a]/80 leading-relaxed font-medium">{t('features.madonnina_desc')}</p>
                </div>
             </div>
          </div>
@@ -400,21 +402,21 @@ export default function Home() {
                
                <div className="space-y-6">
                   <div className="flex gap-4">
-                      <Gem className="text-[#B8860B] flex-shrink-0" size={24}/>
+                      <Gem className="text-[#B8860B] flex-shrink-0" size={24} aria-hidden="true"/>
                       <div>
                         <h4 className="font-bold text-[#1a1a1a]">{t('secrets.item1_title')}</h4>
                         <p className="text-sm text-[#1a1a1a]/70">{t('secrets.item1_desc')}</p>
                       </div>
                   </div>
                   <div className="flex gap-4">
-                      <Gem className="text-[#B8860B] flex-shrink-0" size={24}/>
+                      <Gem className="text-[#B8860B] flex-shrink-0" size={24} aria-hidden="true"/>
                       <div>
                         <h4 className="font-bold text-[#1a1a1a]">{t('secrets.item2_title')}</h4>
                         <p className="text-sm text-[#1a1a1a]/70">{t('secrets.item2_desc')}</p>
                       </div>
                   </div>
                   <div className="flex gap-4">
-                      <Gem className="text-[#B8860B] flex-shrink-0" size={24}/>
+                      <Gem className="text-[#B8860B] flex-shrink-0" size={24} aria-hidden="true"/>
                       <div>
                         <h4 className="font-bold text-[#1a1a1a]">{t('secrets.item3_title')}</h4>
                         <p className="text-sm text-[#1a1a1a]/70">{t('secrets.item3_desc')}</p>
@@ -495,9 +497,9 @@ export default function Home() {
              
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                  <div className="bg-white p-8 shadow-sm border border-gray-200 rounded-xl relative">
-                     <Quote size={40} className="text-gray-200 absolute top-6 right-6"/>
+                     <Quote size={40} className="text-gray-200 absolute top-6 right-6" aria-hidden="true"/>
                      <div className="flex text-[#B8860B] mb-4">
-                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor"/>)}
+                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor" aria-hidden="true"/>)}
                      </div>
                      <p className="text-[#1a1a1a]/70 text-sm leading-relaxed mb-6">
                        "{t('reviews.r1_text')}"
@@ -513,9 +515,9 @@ export default function Home() {
                  </div>
 
                  <div className="bg-white p-8 shadow-sm border border-gray-200 rounded-xl relative">
-                     <Quote size={40} className="text-gray-200 absolute top-6 right-6"/>
+                     <Quote size={40} className="text-gray-200 absolute top-6 right-6" aria-hidden="true"/>
                      <div className="flex text-[#B8860B] mb-4">
-                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor"/>)}
+                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor" aria-hidden="true"/>)}
                      </div>
                      <p className="text-[#1a1a1a]/70 text-sm leading-relaxed mb-6">
                        "{t('reviews.r2_text')}"
@@ -531,9 +533,9 @@ export default function Home() {
                  </div>
 
                  <div className="bg-white p-8 shadow-sm border border-gray-200 rounded-xl relative">
-                     <Quote size={40} className="text-gray-200 absolute top-6 right-6"/>
+                     <Quote size={40} className="text-gray-200 absolute top-6 right-6" aria-hidden="true"/>
                      <div className="flex text-[#B8860B] mb-4">
-                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor"/>)}
+                        {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor" aria-hidden="true"/>)}
                      </div>
                      <p className="text-[#1a1a1a]/70 text-sm leading-relaxed mb-6">
                        "{t('reviews.r3_text')}"
@@ -564,10 +566,11 @@ export default function Home() {
                    <div key={index} className="border-b border-gray-200 pb-4">
                       <button 
                          onClick={() => toggleFaq(index)}
-                         className="w-full flex justify-between items-center text-left py-2 hover:text-[#B8860B] transition"
+                         aria-expanded={openFaq === index}
+                         className="w-full flex justify-between items-center text-left py-2 hover:text-[#B8860B] transition focus:outline-none focus:text-[#B8860B]"
                       >
                          <span className="font-bold text-base md:text-lg text-[#1a1a1a] pr-4">{faq.question}</span>
-                         {openFaq === index ? <Minus size={18} className="text-[#B8860B] flex-shrink-0"/> : <Plus size={18} className="text-gray-400 flex-shrink-0"/>}
+                         {openFaq === index ? <Minus size={18} className="text-[#B8860B] flex-shrink-0" aria-hidden="true"/> : <Plus size={18} className="text-gray-400 flex-shrink-0" aria-hidden="true"/>}
                       </button>
                       <div className={`overflow-hidden transition-all duration-300 ${openFaq === index ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                          <p className="text-[#1a1a1a]/70 font-light leading-relaxed text-sm md:text-base">{faq.answer}</p>
@@ -584,13 +587,13 @@ export default function Home() {
              
              {/* Bal oldal: Információ */}
              <div className="bg-[#f9f9f9] p-8 md:p-12 flex flex-col justify-center order-1 lg:order-1">
-                 <MapPin className="text-[#B8860B] mb-6" size={40}/>
+                 <MapPin className="text-[#B8860B] mb-6" size={40} aria-hidden="true"/>
                  <h3 className="font-serif text-3xl text-[#1a1a1a] mb-6">{t('location.title')}</h3>
                  
                  <div className="space-y-6">
                      <div>
                          <div className="flex items-center gap-3 mb-2">
-                             <Train className="text-[#B8860B]" size={20}/>
+                             <Train className="text-[#B8860B]" size={20} aria-hidden="true"/>
                              <h4 className="font-bold text-[#1a1a1a]">{t('location.metro_title')}</h4>
                          </div>
                          <p className="text-[#1a1a1a]/70 text-sm ml-8">
@@ -600,7 +603,7 @@ export default function Home() {
 
                      <div>
                          <div className="flex items-center gap-3 mb-2">
-                             <Bus className="text-[#B8860B]" size={20}/>
+                             <Bus className="text-[#B8860B]" size={20} aria-hidden="true"/>
                              <h4 className="font-bold text-[#1a1a1a]">{t('location.tram_title')}</h4>
                          </div>
                          <p className="text-[#1a1a1a]/70 text-sm ml-8">
@@ -617,6 +620,7 @@ export default function Home() {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="block w-full h-full relative"
+                    aria-label="Open location in Google Maps"
                  >
                     {/* Placeholder Kép: quality={50} a sebességért */}
                     <Image 
@@ -631,7 +635,7 @@ export default function Home() {
                     {/* Overlay gomb */}
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-white text-[#1a1a1a] px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform transition group-hover:scale-110">
-                            <MapPin size={20} className="text-[#B8860B]" />
+                            <MapPin size={20} className="text-[#B8860B]" aria-hidden="true"/>
                             {t('location.title')} (Google Maps)
                         </div>
                     </div>
