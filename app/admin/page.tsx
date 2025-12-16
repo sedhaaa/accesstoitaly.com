@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react'; 
+import { useEffect, useState, Suspense, useMemo, useCallback } from 'react'; 
 import { supabase } from '@/lib/supabase';
 import { 
   Search, Trash2, Users, Clock, Lock, Unlock, LogOut, Key,
@@ -34,7 +34,7 @@ type AvailabilityRule = {
 
 const STANDARD_TIMES = ["09:00", "09:30", "10:00", "10:30", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-// Segédfüggvény a dátum formázásához
+// --- SEGÉDFÜGGVÉNYEK (Kiemelve, hogy ne generálódjanak újra) ---
 const formatDateTime = (isoString: string) => {
     return new Date(isoString).toLocaleString('hu-HU', { 
         year: 'numeric', month: 'short', day: 'numeric', 
@@ -42,7 +42,6 @@ const formatDateTime = (isoString: string) => {
     });
 };
 
-// --- JEGY TÍPUSOK CÍMKÉZÉSE ÉS SZÍNEZÉSE ---
 const getTicketDetails = (type: string) => {
     switch(type) {
         case 'lift': 
@@ -83,6 +82,18 @@ function AdminContent() {
     blocked_times: []
   });
 
+  // --- DATA FETCHING (Stabilizálva) ---
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    // Limitáljuk 500-ra a lekérést a gyorsabb betöltésért, ha nagyon sok rendelés lenne
+    const { data: orderData } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(500);
+    if (orderData) setOrders(orderData);
+
+    const { data: ruleData } = await supabase.from('availability').select('*');
+    if (ruleData) setRules(ruleData);
+    setLoading(false);
+  }, []);
+
   // --- AUTH CHECK ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -97,7 +108,7 @@ function AdminContent() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchData]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,28 +124,32 @@ function AdminContent() {
     await supabase.auth.signOut();
   };
 
-  // --- DATA FETCHING ---
-  const fetchData = async () => {
-    setLoading(true);
-    const { data: orderData } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if (orderData) setOrders(orderData);
+  // --- MEMOIZED CALCULATIONS (Teljesítmény optimalizálás!) ---
+  // Ez csak akkor fut le, ha változik a keresés vagy a rendelések listája.
+  // Nem lassítja a UI-t minden renderelésnél.
+  const filteredOrders = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    return orders.filter(o => 
+        o.customer_name.toLowerCase().includes(lowerQuery) || 
+        o.customer_email.toLowerCase().includes(lowerQuery) || 
+        o.customer_phone.includes(lowerQuery)
+    );
+  }, [orders, searchQuery]);
 
-    const { data: ruleData } = await supabase.from('availability').select('*');
-    if (ruleData) setRules(ruleData);
-    setLoading(false);
-  };
+  const totalRevenue = useMemo(() => {
+    return orders.reduce((acc, o) => acc + o.total_price, 0);
+  }, [orders]);
 
   // --- CALENDAR LOGIC ---
-  const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-  const getFirstDayOfMonth = (year: number, month: number) => {
-    const day = new Date(year, month, 1).getDay();
-    return day === 0 ? 6 : day - 1;
-  };
-
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
-  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-  const firstDayIndex = getFirstDayOfMonth(currentYear, currentMonth);
+  
+  // Memoized date calculations
+  const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
+  const firstDayIndex = useMemo(() => {
+    const day = new Date(currentYear, currentMonth, 1).getDay();
+    return day === 0 ? 6 : day - 1;
+  }, [currentYear, currentMonth]);
   
   const changeMonth = (offset: number) => setCurrentDate(new Date(currentYear, currentMonth + offset, 1));
 
@@ -155,6 +170,13 @@ function AdminContent() {
         });
     }
     setIsModalOpen(true);
+  };
+
+  const deleteCurrentRule = async () => {
+    if (!editingRule.blocked_date) return;
+    await supabase.from('availability').delete().eq('blocked_date', editingRule.blocked_date);
+    setIsModalOpen(false);
+    fetchData();
   };
 
   const toggleTimeSlot = (time: string) => {
@@ -192,13 +214,6 @@ function AdminContent() {
         setIsModalOpen(false);
         fetchData();
     }
-  };
-
-  const deleteCurrentRule = async () => {
-    if (!editingRule.blocked_date) return;
-    await supabase.from('availability').delete().eq('blocked_date', editingRule.blocked_date);
-    setIsModalOpen(false);
-    fetchData();
   };
 
   // --- RENDER LOGIC ---
@@ -288,7 +303,7 @@ function AdminContent() {
                         </div>
                         <div className="bg-[#111] p-4 rounded-xl border border-white/10 w-full md:w-40 shadow-lg">
                             <p className="text-[10px] text-stone-500 uppercase font-bold">Bevétel</p>
-                            <p className="text-2xl font-serif text-[#B8860B]">€{orders.reduce((acc, o) => acc + o.total_price, 0)}</p>
+                            <p className="text-2xl font-serif text-[#B8860B]">€{totalRevenue}</p>
                         </div>
                     </div>
                     <div className="relative flex-grow max-w-md">
@@ -299,11 +314,9 @@ function AdminContent() {
                     </div>
                 </div>
                 
-                {/* --- RENDELÉSEK LISTÁJA --- */}
+                {/* --- RENDELÉSEK LISTÁJA (Most már a filteredOrders-t használja) --- */}
                 <div className="grid grid-cols-1 gap-4">
-                    {orders.filter(o => o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_email.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_phone.includes(searchQuery)).map((order) => {
-                        
-                        // Jegy típus adatok lekérése a helperből
+                    {filteredOrders.map((order) => {
                         const ticketDetails = getTicketDetails(order.ticket_type);
 
                         return (
@@ -345,7 +358,7 @@ function AdminContent() {
                             {/* TARTALOM GRID */}
                             <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                                 
-                                {/* 1. OSZLOP: IDŐPONTOK (Jól elkülönítve) */}
+                                {/* 1. OSZLOP: IDŐPONTOK */}
                                 <div className="bg-black/20 p-4 rounded-lg border border-white/5 space-y-4">
                                     {/* Látogatás */}
                                     <div className="flex items-start gap-3">
@@ -370,7 +383,7 @@ function AdminContent() {
                                     </div>
                                 </div>
 
-                                {/* 2. OSZLOP: JEGY RÉSZLETEK (Színes badge-ekkel) */}
+                                {/* 2. OSZLOP: JEGY RÉSZLETEK */}
                                 <div className="space-y-3">
                                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Vásárolt Jegyek</p>
                                     
@@ -409,7 +422,7 @@ function AdminContent() {
                                         </div>
                                         <div className="flex items-center gap-3 text-sm text-stone-300 group/link">
                                             <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-stone-500 group-hover/link:text-[#B8860B] transition-colors">
-                                                <Phone size={14}/> {/* JAVÍTVA: Phone ikon a $ helyett */}
+                                                <Phone size={14}/>
                                             </div>
                                             <span>{order.customer_phone}</span>
                                         </div>
@@ -419,15 +432,14 @@ function AdminContent() {
                             </div>
                         </div>
                     )})}
-                    {orders.length === 0 && <div className="text-center py-20 text-stone-600">Nincs megjeleníthető rendelés.</div>}
+                    {filteredOrders.length === 0 && <div className="text-center py-20 text-stone-600">Nincs megjeleníthető rendelés.</div>}
                 </div>
             </div>
         )}
         
-        {/* NAPTÁR FÜL (Változatlan, csak a helykitöltés miatt maradt itt) */}
+        {/* NAPTÁR FÜL */}
         {activeTab === 'availability' && (
             <div className="anim-right max-w-4xl mx-auto">
-                {/* ... Calendar Code ... */}
                 <div className="flex justify-between items-center mb-8 bg-[#111] p-4 rounded-xl border border-white/10 shadow-lg">
                     <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-white/10 rounded-full transition text-white"><ChevronLeft size={24}/></button>
                     <h2 className="text-xl md:text-2xl font-serif font-bold text-[#B8860B] uppercase tracking-widest">{currentDate.toLocaleDateString('hu-HU', { month: 'long', year: 'numeric' })}</h2>
@@ -457,7 +469,7 @@ function AdminContent() {
         )}
       </main>
       
-      {/* MODAL (Változatlan) */}
+      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm anim-fade">
             <div className="bg-[#111] w-full max-w-lg rounded-2xl border border-[#B8860B]/30 shadow-[0_0_50px_rgba(184,134,11,0.15)] p-6 relative anim-up">
