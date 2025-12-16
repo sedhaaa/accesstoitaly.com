@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import { 
   Star, ChevronDown, Menu, X,
   Landmark, Award, Sun, Gem, MapPin, Train, Bus,
-  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon
+  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon, ArrowRight
 } from 'lucide-react';
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
@@ -23,7 +23,7 @@ const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   ssr: false
 });
 
-// --- GOOGLE LOGÓ HELYETT TRUST BADGE ---
+// --- TRUST BADGE ---
 const TrustBadge = () => (
   <div className="flex items-center gap-1 bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
     <CheckCircle size={12} className="text-green-500" />
@@ -74,6 +74,9 @@ const FLAGS: Record<string, React.ReactNode> = {
 
 export default function Home() {
   const t = useTranslations('HomePage');
+  // Külön behúzzuk a comparison blokkot a gyökérből
+  const tComp = useTranslations('comparison'); 
+  
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -324,56 +327,56 @@ export default function Home() {
       <section className="py-12 md:py-20 px-6 md:px-12 bg-white relative z-10 -mt-2">
         <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
-                <h2 className="font-serif text-3xl md:text-4xl text-[#1a1a1a] mb-2">{t('comparison.title')}</h2>
-                <p className="text-stone-500 text-sm">{t('comparison.subtitle')}</p>
+                <h2 className="font-serif text-3xl md:text-4xl text-[#1a1a1a] mb-2">{tComp('title')}</h2>
+                <p className="text-stone-500 text-sm">{tComp('subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 {/* 1. KÁRTYA: COMBO LIFT */}
                 <div className="border-2 border-[#B8860B] bg-[#fffbf2] rounded-2xl p-6 relative shadow-lg transform md:-translate-y-2">
-                    <div className="absolute top-0 right-0 bg-[#B8860B] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg uppercase tracking-wider">{t('comparison.lift_badge')}</div>
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.lift_title')}</h3>
-                    <p className="text-xs text-stone-500 mb-4">{t('comparison.lift_desc')}</p>
+                    <div className="absolute top-0 right-0 bg-[#B8860B] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg uppercase tracking-wider">{tComp('lift_badge')}</div>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{tComp('lift_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{tComp('lift_desc')}</p>
                     <div className="text-2xl font-bold text-[#B8860B] mb-6">€35.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_rooftop_lift')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_rooftop_lift')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a] font-medium"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full bg-[#B8860B] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#9a7009] transition">{t('comparison.btn_select')}</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full bg-[#B8860B] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#9a7009] transition">{tComp('btn_select')}</button>
                 </div>
 
                 {/* 2. KÁRTYA: COMBO STAIRS */}
                 <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.stairs_title')}</h3>
-                    <p className="text-xs text-stone-500 mb-4">{t('comparison.stairs_desc')}</p>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{tComp('stairs_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{tComp('stairs_desc')}</p>
                     <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€29.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_rooftop_stairs')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_rooftop_stairs')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{t('comparison.btn_select')}</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{tComp('btn_select')}</button>
                 </div>
 
                 {/* 3. KÁRTYA: CATHEDRAL ONLY */}
                 <div className="border border-stone-200 bg-white rounded-2xl p-6 relative">
-                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{t('comparison.duomo_title')}</h3>
-                    <p className="text-xs text-stone-500 mb-4">{t('comparison.duomo_desc')}</p>
+                    <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-1">{tComp('duomo_title')}</h3>
+                    <p className="text-xs text-stone-500 mb-4">{tComp('duomo_desc')}</p>
                     <div className="text-2xl font-bold text-[#1a1a1a] mb-6">€21.90</div>
                     
                     <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm text-stone-400 line-through"><XIcon size={16} className="text-stone-300 mt-0.5 shrink-0"/> {t('comparison.feat_no_rooftop')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_cathedral')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_museum')}</li>
-                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {t('comparison.feat_church')}</li>
+                        <li className="flex items-start gap-2 text-sm text-stone-400 line-through"><XIcon size={16} className="text-stone-300 mt-0.5 shrink-0"/> {tComp('feat_no_rooftop')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_cathedral')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_museum')}</li>
+                        <li className="flex items-start gap-2 text-sm text-[#1a1a1a]"><Check size={16} className="text-green-600 mt-0.5 shrink-0"/> {tComp('feat_church')}</li>
                     </ul>
-                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{t('comparison.btn_select')}</button>
+                    <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="w-full border border-stone-300 text-[#1a1a1a] py-3 rounded-xl font-bold text-sm hover:bg-stone-50 transition">{tComp('btn_select')}</button>
                 </div>
 
             </div>

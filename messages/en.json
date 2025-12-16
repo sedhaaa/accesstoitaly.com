@@ -320,6 +320,7 @@
     "office_title": "Office Address",
     "office_note": "Please note: This address is for administrative purposes only. No tickets are sold at this location."
   },
+
   "comparison": {
     "title": "Choose Your Experience",
     "subtitle": "Select the perfect ticket option for your visit",
@@ -338,4 +339,5 @@
     "feat_museum": "Duomo Museum",
     "feat_church": "Church of St. Gottardo"
   }
+  
   }

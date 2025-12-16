@@ -85,24 +85,6 @@
       "metro_desc": "Nehmen Sie die Gelbe Linie (M3) oder die Rote Linie (M1) und steigen Sie an der Station Duomo aus.",
       "tram_title": "Mit der Straßenbahn",
       "tram_desc": "Die Linien 2, 3, 14 und 15 halten in der Via Torino, nur 2 Gehminuten von der Kathedrale entfernt."
-    },
-    "comparison": {
-      "title": "Wählen Sie Ihr Erlebnis",
-      "subtitle": "Wählen Sie die perfekte Ticketoption",
-      "btn_select": "Ticket Auswählen",
-      "lift_title": "Kombo Aufzug",
-      "lift_badge": "Beliebteste",
-      "lift_desc": "Schneller Zugang mit Aufzug",
-      "stairs_title": "Kombo Treppe",
-      "stairs_desc": "Aktive Route (~250 Stufen)",
-      "duomo_title": "Dom + Museum",
-      "duomo_desc": "Kein Zugang zur Terrasse",
-      "feat_rooftop_lift": "Dachterrasse per Aufzug",
-      "feat_rooftop_stairs": "Dachterrasse zu Fuß",
-      "feat_no_rooftop": "Kein Zugang zur Terrasse",
-      "feat_cathedral": "Dom Innenraum",
-      "feat_museum": "Dom Museum",
-      "feat_church": "Kirche St. Gottardo"
     }
   },
   "Booking": {
@@ -335,5 +317,25 @@
     "faq_4_a": "Nein. Sie können den QR-Code direkt auf Ihrem Smartphone am Eingang vorzeigen.",
     "office_title": "Büroadresse",
     "office_note": "Bitte beachten: Diese Adresse dient nur Verwaltungszwecken. Hier werden keine Tickets verkauft."
-  }
+
+  },
+
+  "comparison": {
+      "title": "Wählen Sie Ihr Erlebnis",
+      "subtitle": "Wählen Sie die perfekte Ticketoption",
+      "btn_select": "Ticket Auswählen",
+      "lift_title": "Kombo Aufzug",
+      "lift_badge": "Beliebteste",
+      "lift_desc": "Schneller Zugang mit Aufzug",
+      "stairs_title": "Kombo Treppe",
+      "stairs_desc": "Aktive Route (~250 Stufen)",
+      "duomo_title": "Dom + Museum",
+      "duomo_desc": "Kein Zugang zur Terrasse",
+      "feat_rooftop_lift": "Dachterrasse per Aufzug",
+      "feat_rooftop_stairs": "Dachterrasse zu Fuß",
+      "feat_no_rooftop": "Kein Zugang zur Terrasse",
+      "feat_cathedral": "Dom Innenraum",
+      "feat_museum": "Dom Museum",
+      "feat_church": "Kirche St. Gottardo"
+    }
 }
