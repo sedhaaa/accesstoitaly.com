@@ -12,49 +12,18 @@ import {
   Quote, Minus, Plus, Loader2
 } from 'lucide-react';
 
-// --- NEHÉZ KOMPONENS IMPORTÁLÁSA ---
-const BookingWidgetComponent = dynamic(() => import('../components/BookingWidget'), {
-  ssr: false,
+// --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
+// SSR false: Kliens oldalon tölt be.
+// Loading: FIX magasságú doboz (min-h-[580px]), hogy NE ugráljon a tartalom betöltéskor (CLS védelem).
+const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
+  loading: () => (
+    <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
+       <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
+       <p className="text-[10px] uppercase tracking-widest font-medium opacity-70">Loading Availability...</p>
+    </div>
+  ),
+  ssr: false
 });
-
-// --- PERFORMANCE TRÜKK: KÉSLELTETETT WIDGET ---
-// Ez a komponens vár 2.5 másodpercet betöltés után, mielőtt behúzná a nehéz kódot.
-// Így a Google PageSpeed "LCP" és "TBT" mérése alatt a processzor pihen -> 90+ pont.
-const DelayedWidget = () => {
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    // 1. Azonnali betöltés, ha a felhasználó interakcióba lép (görget, kattint)
-    const handleInteraction = () => setShouldLoad(true);
-    window.addEventListener('scroll', handleInteraction, { once: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true });
-    window.addEventListener('click', handleInteraction, { once: true });
-
-    // 2. Automatikus betöltés 2.5mp múlva (ha nem csinál semmit)
-    const timer = setTimeout(() => {
-      setShouldLoad(true);
-    }, 2500);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-    };
-  }, []);
-
-  if (!shouldLoad) {
-    // Ez a könnyű "helyőrző" látszik a mérés alatt
-    return (
-      <div className="w-full h-[540px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
-         <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
-         <p className="text-[10px] uppercase tracking-widest font-medium opacity-70">Loading Calendar...</p>
-      </div>
-    );
-  }
-
-  return <BookingWidgetComponent />;
-};
 
 // --- STATIKUS ELEMEK ---
 const GoogleLogo = () => (
@@ -256,41 +225,10 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* --- MOBILE MENU --- */}
-      {mobileMenuOpen && (
-        <>
-            <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[190] animate-in fade-in duration-300"
-              onClick={() => setMobileMenuOpen(false)}
-            ></div>
-
-            <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-[#1a1a1a] z-[200] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-white/10">
-                <div className="flex justify-end p-6">
-                    <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" className="text-white hover:text-[#B8860B] transition focus:outline-none focus:ring-2 focus:ring-[#B8860B] rounded">
-                        <X size={32} />
-                    </button>
-                </div>
-
-                <div className="flex flex-col items-center justify-center flex-grow space-y-8 p-6">
-                    <a href="#history" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.history')}</a>
-                    <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.experience')}</a>
-                    <a href="#info" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.info')}</a>
-                    <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif text-white hover:text-[#B8860B] transition-colors">{t('nav.reviews')}</a>
-                    
-                    <div className="pt-8 w-full">
-                        <button onClick={() => {setMobileMenuOpen(false); window.scrollTo({top:0, behavior:'smooth'})}} className="w-full bg-[#B8860B] text-white py-4 rounded-xl font-bold uppercase tracking-wider text-sm shadow-lg hover:bg-[#9a7009] transition">
-                            {t('nav.bookBtn')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </>
-      )}
-
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
-          {/* OPTIMALIZÁLT HERO KÉP: Minőség levéve 55-re a SpeedScore érdekében */}
+          {/* OPTIMALIZÁLT HERO KÉP */}
           <Image 
             src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
             alt="Duomo di Milano Facade at Sunset" 
@@ -299,18 +237,19 @@ export default function Home() {
             fetchPriority="high" 
             className="object-cover"
             sizes="100vw"
-            quality={55} 
+            quality={60} 
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/95 via-[#1a1a1a]/50 to-[#1a1a1a]/20"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full pt-8 md:pt-12 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center">
           
-          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8 animate-in slide-in-from-left-4 fade-in duration-1000">
+          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8">
             <div className="inline-flex items-center gap-3 border-b border-[#B8860B] pb-2">
               <Star className="text-[#B8860B] w-4 h-4 fill-current" aria-hidden="true"/>
               <span className="text-[#B8860B] text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{t('hero.badge')}</span>
             </div>
+            {/* HERO SZÖVEG: Animációk kikapcsolva az azonnali megjelenésért (LCP) */}
             <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl leading-[0.9] drop-shadow-2xl">
               {t('hero.title')} <br/>
               <span className="italic font-light opacity-90 ml-2 md:ml-4">{t('hero.subtitle')}</span>
@@ -330,10 +269,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end animate-in slide-in-from-right-4 fade-in duration-1000 delay-200">
+          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end">
             <div className="w-full max-w-md">
-               {/* A KÉSLELTETETT WIDGET HASZNÁLATA */}
-               <DelayedWidget />
+               <BookingWidget />
             </div>
           </div>
         </div>
