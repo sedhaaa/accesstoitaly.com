@@ -13,8 +13,6 @@ import {
 } from 'lucide-react';
 
 // --- OPTIMALIZÁCIÓ: BookingWidget (Heavy Component) ---
-// SSR false: A szerver nem dolgozik vele, a kliens tölti be, amikor ráér.
-// A loading skeleton pontos magassága (540px) megakadályozza az ugrálást (CLS).
 const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   loading: () => (
     <div className="w-full h-[540px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
@@ -25,7 +23,7 @@ const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   ssr: false
 });
 
-// --- STATIKUS ELEMEK (Kiemelve a renderelésből) ---
+// --- STATIKUS ELEMEK ---
 const GoogleLogo = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -87,7 +85,6 @@ export default function Home() {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement>(null);
 
-  // Click Outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
@@ -123,7 +120,6 @@ export default function Home() {
     }
   }, [mobileMenuOpen]);
 
-  // SEO Schema
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -258,23 +254,24 @@ export default function Home() {
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
-          {/* OPTIMALIZÁLT HERO KÉP: fetchPriority='high' és quality={60} */}
+          {/* OPTIMALIZÁLT HERO KÉP: fetchPriority='high', quality=60 */}
           <Image 
             src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
             alt="Duomo di Milano Facade at Sunset" 
             fill
             priority={true}
-            fetchPriority="high" // LEGFONTOSABB a PageSpeed-hez
+            fetchPriority="high" 
             className="object-cover"
             sizes="100vw"
-            quality={60} // A sötét overlay miatt ez is bőven elég, de gyorsabb
+            quality={60} 
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/95 via-[#1a1a1a]/50 to-[#1a1a1a]/20"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full pt-8 md:pt-12 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center">
           
-          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8 animate-in slide-in-from-left-4 fade-in duration-1000">
+          {/* JAVÍTÁS: Nincs 'animate-in' mobilon, csak desktopon (md:animate-in), így azonnal látszik a szöveg */}
+          <div className="lg:col-span-7 text-white space-y-6 md:space-y-8 md:animate-in md:slide-in-from-left-4 md:fade-in md:duration-1000">
             <div className="inline-flex items-center gap-3 border-b border-[#B8860B] pb-2">
               <Star className="text-[#B8860B] w-4 h-4 fill-current"/>
               <span className="text-[#B8860B] text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{t('hero.badge')}</span>
@@ -298,7 +295,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end animate-in slide-in-from-right-4 fade-in duration-1000 delay-200">
+          <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end md:animate-in md:slide-in-from-right-4 md:fade-in md:duration-1000 md:delay-200">
             <div className="w-full max-w-md">
                <BookingWidget />
             </div>
@@ -350,7 +347,7 @@ export default function Home() {
                       src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/alessandro-cavestro-SXHm_cboGiI-unsplash_cmalx8.jpg" 
                       alt="Duomo Historical Detail" 
                       fill 
-                      sizes="(max-width: 768px) 100vw, 50vw" // PONTOS MÉRETEZÉS!
+                      sizes="(max-width: 768px) 100vw, 50vw" 
                       className="object-cover hover:scale-105 transition duration-1000"
                   />
                </div>
@@ -389,7 +386,7 @@ export default function Home() {
                   src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                   alt="Duomo Detail" 
                   fill 
-                  sizes="(max-width: 768px) 100vw, 50vw" // PONTOS MÉRETEZÉS!
+                  sizes="(max-width: 768px) 100vw, 50vw" 
                   className="object-cover rounded-sm shadow-xl"
                />
                <div className="absolute -bottom-6 -right-6 bg-[#1a1a1a] p-6 shadow-lg max-w-xs border-l-4 border-[#B8860B]">
@@ -443,7 +440,7 @@ export default function Home() {
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-CzjWqp0UWAc-unsplash_lnqbpz.jpg" 
                         alt="Rooftop Sunset" 
                         fill 
-                        sizes="(max-width: 768px) 100vw, 33vw" // PONTOS MÉRETEZÉS!
+                        sizes="(max-width: 768px) 100vw, 33vw" 
                         className="object-cover transition duration-700 group-hover:scale-105"
                       />
                   </div>
@@ -459,7 +456,7 @@ export default function Home() {
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-DQge-qqqzxU-unsplash_csigsf.jpg" 
                         alt="Inside the Duomo" 
                         fill 
-                        sizes="(max-width: 768px) 100vw, 33vw" // PONTOS MÉRETEZÉS!
+                        sizes="(max-width: 768px) 100vw, 33vw" 
                         className="object-cover transition duration-700 group-hover:scale-105"
                       />
                   </div>
@@ -475,7 +472,7 @@ export default function Home() {
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                         alt="Milan Food" 
                         fill 
-                        sizes="(max-width: 768px) 100vw, 33vw" // PONTOS MÉRETEZÉS!
+                        sizes="(max-width: 768px) 100vw, 33vw" 
                         className="object-cover transition duration-700 group-hover:scale-105"
                       />
                   </div>
@@ -616,7 +613,7 @@ export default function Home() {
              {/* Jobb oldal: Térkép - OPTIMALIZÁLT (Static Image + Link) */}
              <div className="lg:col-span-2 h-[400px] lg:h-full relative order-2 lg:order-2 group overflow-hidden bg-[#1a1a1a]">
                  <a 
-                    href="https://www.google.com/maps/place/Duomo+di+Milano/@45.464098,9.191926,17z" 
+                    href="https://www.google.com/maps/search/?api=1&query=Duomo+di+Milano" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="block w-full h-full relative"
