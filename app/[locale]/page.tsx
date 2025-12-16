@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
-const BookingWidget = dynamic(() => import('@/components/BookingWidget'), {
+const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   loading: () => (
     <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
        <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
