@@ -5,15 +5,26 @@ import Image from 'next/image';
 import Script from 'next/script';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
-import BookingWidget from '../components/BookingWidget';
+import dynamic from 'next/dynamic'; // ÚJ: Dynamic import a sebességért
 import { 
   Star, ChevronDown, Menu, X, Globe,
   Landmark, Award, Sun, Gem, MapPin, Train, Bus,
-  Quote, Minus, Plus
+  Quote, Minus, Plus, Loader2
 } from 'lucide-react';
 
-// --- STATIKUS ELEMEK (Kiemelve a renderelésből a teljesítményért) ---
+// --- OPTIMALIZÁCIÓ: BookingWidget késleltetett betöltése ---
+// Ez azért kell, hogy az oldal azonnal betöltsön, és ne várjon a Stripe/Naptár nehéz kódjára.
+const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
+  loading: () => (
+    <div className="w-full h-[500px] bg-[#1a1a1a] rounded-3xl animate-pulse flex flex-col items-center justify-center text-stone-500 border border-white/10">
+       <Loader2 size={40} className="animate-spin mb-4 text-[#B8860B]"/>
+       <p className="text-xs uppercase tracking-widest">Loading Calendar...</p>
+    </div>
+  ),
+  ssr: false // A fizetési modulnak nem kell futnia a szerveren
+});
 
+// --- STATIKUS ELEMEK (Kiemelve a renderelésből a teljesítményért) ---
 const GoogleLogo = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -253,6 +264,7 @@ export default function Home() {
             priority={true}
             className="object-cover"
             sizes="100vw"
+            quality={90}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/95 via-[#1a1a1a]/50 to-[#1a1a1a]/20"></div>
         </div>
@@ -566,7 +578,7 @@ export default function Home() {
          </div>
       </section>
 
-      {/* --- LOCATION MAP --- */}
+      {/* --- LOCATION MAP - OPTIMALIZÁLT (IFRAME KIVÁLTVA) --- */}
       <section className="w-full bg-white relative z-10">
          <div className="grid grid-cols-1 lg:grid-cols-3 h-auto lg:h-[500px]">
              
@@ -598,17 +610,31 @@ export default function Home() {
                  </div>
              </div>
 
-             {/* Jobb oldal: Térkép */}
-             <div className="lg:col-span-2 h-[400px] lg:h-full relative grayscale hover:grayscale-0 transition duration-700 order-2 lg:order-2">
-                 <iframe 
-                    src="https://maps.google.com/maps?q=Duomo+di+Milano&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                    width="100%" 
-                    height="100%" 
-                    style={{border:0}} 
-                    allowFullScreen={true} 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade"
-                 ></iframe>
+             {/* Jobb oldal: Térkép KÉP (Nem Iframe!) - Ez a titka a 80+ pontszámnak */}
+             <div className="lg:col-span-2 h-[400px] lg:h-full relative order-2 lg:order-2 group overflow-hidden bg-[#1a1a1a]">
+                 <a 
+                    href="https://www.google.com/maps/place/Duomo+di+Milano/@45.464098,9.191926,17z" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block w-full h-full relative"
+                 >
+                    {/* Placeholder Kép (Ugyanazt használjuk, mint a hero-nál, de grayscale effekttel, mint a ThankYou oldalon) */}
+                    <Image 
+                        src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
+                        alt="Map Location Placeholder"
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-100 grayscale hover:grayscale-0"
+                        sizes="(max-width: 768px) 100vw, 66vw"
+                    />
+                    
+                    {/* Overlay Gomb */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-white text-[#1a1a1a] px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform transition group-hover:scale-110">
+                            <MapPin size={20} className="text-[#B8860B]" />
+                            {t('location.title')} (Google Maps)
+                        </div>
+                    </div>
+                 </a>
              </div>
          </div>
       </section>
