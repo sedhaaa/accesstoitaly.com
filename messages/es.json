@@ -88,55 +88,66 @@
     }
   },
   "Booking": {
-    "steps": "Paso {step} / 4",
-    "total": "Total",
-    "titles": {
-      "step1": "Seleccionar Entradas",
-      "step2": "Elegir Fecha",
-      "step3": "Visitantes",
-      "step4": "Sus Datos"
-    },
-    "tickets": {
-      "lift_name": "Combo Ascensor",
-      "lift_desc": "Duomo + Terrazas (Ascensor) + Museo",
-      "lift_tag": "Más Popular",
-      "stairs_name": "Combo Escaleras",
-      "stairs_desc": "Duomo + Terrazas (Escaleras) + Museo",
-      "stairs_tag": "Mejor Valor",
-      "duomo_name": "Duomo + Museo",
-      "duomo_desc": "Solo Catedral (Sin Terrazas)"
-    },
-    "info_validity": "Las entradas son válidas por 72 horas desde la fecha seleccionada.",
-    "calendar": {
-      "sold_out": "Agotado",
-      "last_spots": "Últimos sitios",
-      "entry_time": "Hora de Entrada",
-      "selling_fast": "¡Se agotan rápido!"
-    },
-    "summary": {
-      "title": "Resumen",
-      "adult": "Adulto",
-      "adult_desc": "Edad 19+",
-      "reduced": "Reducido",
-      "reduced_desc": "Edad 6-18"
-    },
-    "form": {
-      "info": "Ingrese los datos del <strong>Viajero Principal</strong>. Las entradas se enviarán a este correo al instante.",
-      "name_placeholder": "Nombre Completo",
-      "email_placeholder": "Correo Electrónico",
-      "phone_placeholder": "Número de Teléfono",
-      "security": "Cifrado SSL de 256 bits"
-    },
-    "buttons": {
-      "processing": "Procesando...",
-      "checkout": "Ir a Pagar",
-      "continue": "Continuar"
-    },
-    "footer": {
-      "instant": "Confirmación Inmediata",
-      "cancel": "Cancelación gratuita hasta 24h"
+  "steps": "Paso {step} / 4",
+  "total": "Total",
+  "titles": {
+    "step1": "Seleccionar Entradas",
+    "step2": "Elegir Fecha",
+    "step3": "Huéspedes",
+    "step4": "Sus Detalles"
+  },
+  "tickets": {
+    "lift_name": "Combo Ascensor",
+    "lift_desc": "Duomo + Terrazas (Ascensor) + Museo",
+    "lift_tag": "Popular",
+    "stairs_name": "Combo Escaleras",
+    "stairs_desc": "Duomo + Terrazas (Escaleras) + Museo",
+    "stairs_tag": "Mejor Precio",
+    "duomo_name": "Duomo + Museo",
+    "duomo_desc": "Solo Catedral (Sin Terrazas)"
+  },
+  "info_validity": "Las entradas son válidas por 72 horas desde la fecha seleccionada.",
+  "calendar": {
+    "sold_out": "Agotado",
+    "last_spots": "Últimos lugares",
+    "entry_time": "Hora de entrada",
+    "selling_fast": "¡Se agotan rápido!"
+  },
+  "summary": {
+    "title": "Resumen",
+    "adult": "Adulto",
+    "adult_desc": "19+ años",
+    "reduced": "Reducido",
+    "reduced_desc": "6-18 años"
+  },
+  "form": {
+    "info": "Ingrese los detalles del <strong>Viajero Principal</strong>. Las entradas se enviarán a este correo al instante.",
+    "name_placeholder": "Nombre Completo",
+    "email_placeholder": "Correo Electrónico",
+    "phone_placeholder": "Número de Teléfono",
+    "security": "Cifrado SSL de 256 bits",
+    "validation_name": "Por favor, ingrese su nombre completo (mín. 3 caracteres)",
+    "validation_email": "Formato de correo inválido (ej. nombre@dominio.com)",
+    "validation_gmail_typo": "¿Quiso decir @gmail.com?",
+    "validation_phone": "El número de teléfono es demasiado corto"
+  },
+  "buttons": {
+    "processing": "Procesando...",
+    "checkout": "Ir a Pagar",
+    "continue": "Continuar",
+    "to_payment": "Continuar al Pago",
+    "pay": "Pagar"
+  },
+  "footer": {
+    "instant": "Confirmación Inmediata",
+    "cancel": "Cancelación gratuita hasta 24h"
     }
   },
+  "errors": {
+      "sold_out_day": "Lo sentimos, este día se ha agotado.",
+      "sold_out_time": "Lo sentimos, la hora {time} ya no está disponible.",
+      "generic_error": "Algo salió mal. Por favor inténtalo de nuevo."
+    },
   "ThankYou": {
     "title": "Pago Exitoso",
     "subtitle": "Su reserva está confirmada.",

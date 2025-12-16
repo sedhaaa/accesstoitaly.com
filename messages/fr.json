@@ -88,55 +88,66 @@
     }
   },
   "Booking": {
-    "steps": "Étape {step} / 4",
-    "total": "Total",
-    "titles": {
-      "step1": "Choisir Billets",
-      "step2": "Choisir Date",
-      "step3": "Visiteurs",
-      "step4": "Vos Détails"
-    },
-    "tickets": {
-      "lift_name": "Combo Ascenseur",
-      "lift_desc": "Duomo + Terrasses (Ascenseur) + Musée",
-      "lift_tag": "Le Plus Populaire",
-      "stairs_name": "Combo Escaliers",
-      "stairs_desc": "Duomo + Terrasses (Escaliers) + Musée",
-      "stairs_tag": "Meilleur Prix",
-      "duomo_name": "Duomo + Musée",
-      "duomo_desc": "Cathédrale Uniquement (Pas de Terrasses)"
-    },
-    "info_validity": "Les billets sont valables 72 heures à partir de la date sélectionnée.",
-    "calendar": {
-      "sold_out": "Épuisé",
-      "last_spots": "Dernières places",
-      "entry_time": "Heure d'Entrée",
-      "selling_fast": "Vente Rapide !"
-    },
-    "summary": {
-      "title": "Résumé",
-      "adult": "Adulte",
-      "adult_desc": "19 ans et +",
-      "reduced": "Réduit",
-      "reduced_desc": "6-18 ans"
-    },
-    "form": {
-      "info": "Veuillez entrer les détails du <strong>Voyageur Principal</strong>. Les billets seront envoyés à cet e-mail instantanément.",
-      "name_placeholder": "Nom Complet",
-      "email_placeholder": "Adresse E-mail",
-      "phone_placeholder": "Numéro de Téléphone",
-      "security": "Chiffrement SSL 256 bits"
-    },
-    "buttons": {
-      "processing": "Traitement...",
-      "checkout": "Payer",
-      "continue": "Continuer"
-    },
-    "footer": {
-      "instant": "Confirmation Immédiate",
-      "cancel": "Annulation gratuite jusqu'à 24h"
+  "steps": "Étape {step} / 4",
+  "total": "Total",
+  "titles": {
+    "step1": "Sélectionner billets",
+    "step2": "Choisir la date",
+    "step3": "Invités",
+    "step4": "Vos détails"
+  },
+  "tickets": {
+    "lift_name": "Combo Ascenseur",
+    "lift_desc": "Duomo + Terrasses (Ascenseur) + Musée",
+    "lift_tag": "Populaire",
+    "stairs_name": "Combo Escaliers",
+    "stairs_desc": "Duomo + Terrasses (Escaliers) + Musée",
+    "stairs_tag": "Meilleur prix",
+    "duomo_name": "Duomo + Musée",
+    "duomo_desc": "Accès Cathédrale uniquement (Pas de Terrasses)"
+  },
+  "info_validity": "Les billets sont valables 72 heures à partir de la date sélectionnée.",
+  "calendar": {
+    "sold_out": "Épuisé",
+    "last_spots": "Dernières places",
+    "entry_time": "Heure d'entrée",
+    "selling_fast": "Vite épuisé !"
+  },
+  "summary": {
+    "title": "Résumé",
+    "adult": "Adulte",
+    "adult_desc": "19+ ans",
+    "reduced": "Réduit",
+    "reduced_desc": "6-18 ans"
+  },
+  "form": {
+    "info": "Veuillez entrer les détails du <strong>Voyageur Principal</strong>. Les billets seront envoyés instantanément à cette adresse.",
+    "name_placeholder": "Nom Complet",
+    "email_placeholder": "Adresse E-mail",
+    "phone_placeholder": "Numéro de téléphone",
+    "security": "Chiffrement SSL 256-bit",
+    "validation_name": "Veuillez entrer votre nom complet (min 3 caractères)",
+    "validation_email": "Format d'email invalide (ex. nom@domaine.com)",
+    "validation_gmail_typo": "Vouliez-vous dire @gmail.com ?",
+    "validation_phone": "Le numéro de téléphone est trop court"
+  },
+  "buttons": {
+    "processing": "Traitement...",
+    "checkout": "Payer",
+    "continue": "Continuer",
+    "to_payment": "Procéder au paiement",
+    "pay": "Payer"
+  },
+  "footer": {
+    "instant": "Confirmation immédiate",
+    "cancel": "Annulation gratuite jusqu'à 24h"
     }
   },
+  "errors": {
+      "sold_out_day": "Désolé, ce jour est complet.",
+      "sold_out_time": "Désolé, l'horaire {time} n'est plus disponible.",
+      "generic_error": "Une erreur s'est produite. Veuillez réessayer."
+    },
   "ThankYou": {
     "title": "Paiement Réussi",
     "subtitle": "Votre réservation est confirmée.",

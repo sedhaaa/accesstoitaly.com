@@ -89,13 +89,13 @@
   },
 
   "Booking": {
-    "steps": "Fase {step} / 4",
+    "steps": "Passo {step} / 4",
     "total": "Totale",
     "titles": {
       "step1": "Seleziona Biglietti",
       "step2": "Scegli Data",
       "step3": "Ospiti",
-      "step4": "I Tuoi Dettagli"
+      "step4": "I tuoi Dati"
     },
     "tickets": {
       "lift_name": "Combo Ascensore",
@@ -111,33 +111,49 @@
     "calendar": {
       "sold_out": "Esaurito",
       "last_spots": "Ultimi posti",
-      "entry_time": "Orario di Ingresso",
-      "selling_fast": "Vanno a ruba!"
+      "entry_time": "Orario di ingresso",
+      "selling_fast": "In esaurimento!"
     },
     "summary": {
       "title": "Riepilogo",
-      "adult": "Adulto",
-      "adult_desc": "Età 19+",
+      "adult": "Adulti",
+      "adult_desc": "19+ anni",
       "reduced": "Ridotto",
-      "reduced_desc": "Età 6-18"
+      "reduced_desc": "6-18 anni"
     },
     "form": {
-      "info": "Inserisci i dettagli del <strong>Viaggiatore Principale</strong>. I biglietti verranno inviati a questa email istantaneamente.",
+      "info": "Inserisci i dati del <strong>Viaggiatore Principale</strong>. I biglietti verranno inviati a questa email all'istante.",
       "name_placeholder": "Nome Completo",
       "email_placeholder": "Indirizzo Email",
       "phone_placeholder": "Numero di Telefono",
-      "security": "Crittografia SSL a 256 bit"
+      "security": "Crittografia SSL 256-bit",
+      "validation_name": "Inserisci il tuo nome completo (min 3 caratteri)",
+      "validation_email": "Formato email non valido (es. nome@dominio.com)",
+      "validation_gmail_typo": "Intendevi @gmail.com?",
+      "validation_phone": "Il numero di telefono è troppo corto"
     },
     "buttons": {
       "processing": "Elaborazione...",
       "checkout": "Vai al Pagamento",
-      "continue": "Continua"
+      "continue": "Continua",
+      "to_payment": "Procedi al Pagamento",
+      "pay": "Paga"
     },
     "footer": {
       "instant": "Conferma Immediata",
       "cancel": "Cancellazione gratuita fino a 24h"
+    },
+    "errors": {
+      "sold_out_day": "Siamo spiacenti, questo giorno è appena esaurito.",
+      "sold_out_time": "Siamo spiacenti, l'orario {time} non è più disponibile.",
+      "generic_error": "Qualcosa è andato storto. Riprova."
     }
   },
+  "errors": {
+      "sold_out_day": "Siamo spiacenti, questo giorno è appena esaurito.",
+      "sold_out_time": "Siamo spiacenti, l'orario {time} non è più disponibile.",
+      "generic_error": "Qualcosa è andato storto. Riprova."
+    },
   "ThankYou": {
     "title": "Pagamento Riuscito",
     "subtitle": "La tua prenotazione è confermata.",

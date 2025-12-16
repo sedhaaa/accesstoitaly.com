@@ -1,12 +1,11 @@
 'use client';
 
-// 1. Importáld a Suspense-t
 import { useEffect, useState, Suspense } from 'react'; 
 import { supabase } from '@/lib/supabase';
 import { 
-  Search, Calendar, Trash2, Plus, Filter, 
-  Users, DollarSign, Clock, MapPin, CheckCircle, XCircle, Shield,
-  ChevronLeft, ChevronRight, X, Save, Lock, Unlock, LogOut, Key
+  Search, Trash2, Users, Clock, Lock, Unlock, LogOut, Key,
+  ChevronLeft, ChevronRight, X, Save, Shield,
+  CalendarCheck, CalendarClock, Phone, Mail, CreditCard, Ticket, CheckCircle
 } from 'lucide-react';
 
 // --- TÍPUSOK ---
@@ -35,8 +34,28 @@ type AvailabilityRule = {
 
 const STANDARD_TIMES = ["09:00", "09:30", "10:00", "10:30", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-// 2. A régi 'AdminPage' logikáját átnevezzük 'AdminContent'-re
-// Ez a komponens tartalmazza az ÖSSZES eddigi logikádat változatlanul
+// Segédfüggvény a dátum formázásához
+const formatDateTime = (isoString: string) => {
+    return new Date(isoString).toLocaleString('hu-HU', { 
+        year: 'numeric', month: 'short', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit' 
+    });
+};
+
+// --- JEGY TÍPUSOK CÍMKÉZÉSE ÉS SZÍNEZÉSE ---
+const getTicketDetails = (type: string) => {
+    switch(type) {
+        case 'lift': 
+            return { label: 'COMBO: Lift & Terraces + Cathedral', color: 'text-amber-400 border-amber-400/30 bg-amber-400/10' };
+        case 'stairs': 
+            return { label: 'COMBO: Stairs & Terraces + Cathedral', color: 'text-blue-400 border-blue-400/30 bg-blue-400/10' };
+        case 'duomo': 
+            return { label: 'Duomo Cathedral Only', color: 'text-stone-400 border-stone-400/30 bg-stone-400/10' };
+        default: 
+            return { label: type.toUpperCase(), color: 'text-white border-white/20 bg-white/5' };
+    }
+};
+
 function AdminContent() {
   // Auth State
   const [session, setSession] = useState<any>(null);
@@ -188,12 +207,7 @@ function AdminContent() {
   if (!session) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
-        <style jsx global>{`
-            @keyframes fadeInZoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-            .anim-login { animation: fadeInZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        `}</style>
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] to-[#000000] z-0"></div>
-        <div className="bg-[#111]/80 backdrop-blur-xl border border-white/10 p-10 rounded-3xl w-full max-w-md shadow-2xl relative z-10 anim-login">
+        <div className="bg-[#111]/80 backdrop-blur-xl border border-white/10 p-10 rounded-3xl w-full max-w-md shadow-2xl relative z-10">
             <div className="text-center mb-8">
                 <Shield className="mx-auto text-[#B8860B] mb-4" size={48} />
                 <h1 className="text-3xl font-serif font-bold text-white tracking-widest uppercase">Access<span className="text-[#B8860B]">To</span>Italy</h1>
@@ -224,7 +238,6 @@ function AdminContent() {
     );
   }
 
-  // --- A Dashboard UI ---
   return (
     <>
     <style jsx global>{`
@@ -236,6 +249,8 @@ function AdminContent() {
         .anim-right { animation: slideRight 0.4s ease-out forwards; }
     `}</style>
     <div className="min-h-screen bg-[#050505] text-stone-200 font-sans selection:bg-[#B8860B] selection:text-white pb-20">
+      
+      {/* NAVBAR */}
       <header className="bg-[#111]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/5 px-6 py-4 flex justify-between items-center shadow-2xl">
         <div className="flex items-center gap-3">
             <Shield className="text-[#B8860B]" size={28}/>
@@ -251,53 +266,168 @@ function AdminContent() {
             <button onClick={handleLogout} className="p-2 text-stone-500 hover:text-red-500 transition"><LogOut size={20}/></button>
         </div>
       </header>
+
+      {/* MOBILE TABS */}
       <div className="md:hidden px-6 mt-4">
         <div className="flex bg-black/40 p-1 rounded-lg border border-white/10 w-full">
             <button onClick={() => setActiveTab('orders')} className={`flex-1 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'orders' ? 'bg-[#B8860B] text-white' : 'text-stone-500'}`}>Rendelések</button>
             <button onClick={() => setActiveTab('availability')} className={`flex-1 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'availability' ? 'bg-[#B8860B] text-white' : 'text-stone-500'}`}>Naptár</button>
         </div>
       </div>
+
       <main className="max-w-7xl mx-auto px-6 mt-8">
         {activeTab === 'orders' && (
             <div className="space-y-6 anim-up">
+                
+                {/* STATS & SEARCH */}
                 <div className="flex flex-col md:flex-row justify-between gap-4">
                     <div className="flex gap-4">
                         <div className="bg-[#111] p-4 rounded-xl border border-white/10 w-full md:w-40 shadow-lg">
-                            <p className="text-[10px] text-stone-500 uppercase font-bold">Összes Rendelés</p>
+                            <p className="text-[10px] text-stone-500 uppercase font-bold">Rendelések</p>
                             <p className="text-2xl font-serif text-white">{orders.length}</p>
                         </div>
                         <div className="bg-[#111] p-4 rounded-xl border border-white/10 w-full md:w-40 shadow-lg">
-                            <p className="text-[10px] text-stone-500 uppercase font-bold">Összbevétel</p>
+                            <p className="text-[10px] text-stone-500 uppercase font-bold">Bevétel</p>
                             <p className="text-2xl font-serif text-[#B8860B]">€{orders.reduce((acc, o) => acc + o.total_price, 0)}</p>
                         </div>
                     </div>
                     <div className="relative flex-grow max-w-md">
                         <div className="w-full bg-[#111] border border-white/10 rounded-xl flex items-center px-4 py-3 shadow-lg focus-within:border-[#B8860B] transition-all">
                             <Search className="text-stone-500 mr-3 flex-shrink-0" size={20}/>
-                            <input type="text" placeholder="Keresés név, email vagy telefon alapján..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none outline-none text-white w-full placeholder:text-stone-600"/>
+                            <input type="text" placeholder="Keresés..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none outline-none text-white w-full placeholder:text-stone-600"/>
                         </div>
                     </div>
                 </div>
+                
+                {/* --- RENDELÉSEK LISTÁJA --- */}
                 <div className="grid grid-cols-1 gap-4">
-                    {orders.filter(o => o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_email.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_phone.includes(searchQuery)).map((order) => (
-                        <div key={order.id} className="bg-[#111] hover:bg-[#161616] transition-all p-6 rounded-xl border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden shadow-md hover:shadow-xl hover:border-white/10 group">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${order.status === 'paid' ? 'bg-green-500' : 'bg-[#B8860B]'}`}></div>
-                            <div className="flex-grow space-y-1">
-                                <div className="flex items-center gap-3"><h3 className="text-xl font-bold text-white">{order.customer_name}</h3><span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide border ${order.status === 'paid' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}>{order.status === 'pending' ? 'Függőben' : 'Fizetve'}</span></div>
-                                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 text-xs text-stone-400"><span className="flex items-center gap-1"><Users size={14}/> {order.customer_email}</span><span className="flex items-center gap-1"><DollarSign size={14}/> {order.customer_phone}</span></div>
+                    {orders.filter(o => o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_email.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer_phone.includes(searchQuery)).map((order) => {
+                        
+                        // Jegy típus adatok lekérése a helperből
+                        const ticketDetails = getTicketDetails(order.ticket_type);
+
+                        return (
+                        <div key={order.id} className="bg-[#111] hover:bg-[#161616] transition-all p-0 rounded-xl border border-white/5 relative overflow-hidden shadow-md hover:shadow-xl hover:border-white/10 group">
+                            
+                            {/* Oldalsó csík státusz szerint */}
+                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${order.status === 'paid' ? 'bg-green-500' : 'bg-[#B8860B]'}`}></div>
+                            
+                            {/* FEJLÉC */}
+                            <div className="p-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/[0.02]">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-black border border-white/10 flex items-center justify-center text-[#B8860B] font-serif font-bold text-xl shadow-inner">
+                                        {order.customer_name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white leading-tight flex items-center gap-2">
+                                            {order.customer_name}
+                                            {order.status === 'paid' 
+                                                ? <CheckCircle size={14} className="text-green-500" />
+                                                : <Clock size={14} className="text-[#B8860B]" />
+                                            }
+                                        </h3>
+                                        <div className="flex items-center gap-3 mt-1">
+                                            <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide border ${order.status === 'paid' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}>
+                                                {order.status === 'paid' ? 'FIZETVE' : 'FÜGGŐBEN'}
+                                            </span>
+                                            <span className="text-[10px] text-stone-500 font-mono">ID: {order.id.slice(0,8)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="flex items-center justify-end gap-2 text-[#B8860B]">
+                                        <CreditCard size={16} />
+                                        <span className="text-2xl font-bold font-sans">€{order.total_price}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex w-full md:w-auto justify-between md:justify-end items-center gap-8">
-                                <div className="text-center md:text-right"><p className="text-[10px] text-stone-500 uppercase font-bold">Dátum</p><p className="text-white font-serif text-lg">{order.visit_date}</p><p className="text-[#B8860B] text-xs font-bold">{order.visit_time}</p></div>
-                                <div className="text-right"><p className="text-[10px] text-stone-500 uppercase font-bold">Összeg</p><p className="text-2xl font-bold text-white">€{order.total_price}</p></div>
+
+                            {/* TARTALOM GRID */}
+                            <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+                                
+                                {/* 1. OSZLOP: IDŐPONTOK (Jól elkülönítve) */}
+                                <div className="bg-black/20 p-4 rounded-lg border border-white/5 space-y-4">
+                                    {/* Látogatás */}
+                                    <div className="flex items-start gap-3">
+                                        <div className="p-2 bg-[#B8860B]/10 rounded text-[#B8860B]">
+                                            <CalendarCheck size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Látogatás Ideje</p>
+                                            <p className="text-white font-bold text-lg leading-none">{order.visit_date}</p>
+                                            <p className="text-[#B8860B] font-bold text-sm mt-0.5">{order.visit_time} óra</p>
+                                        </div>
+                                    </div>
+                                    {/* Rendelés leadva */}
+                                    <div className="flex items-start gap-3 pt-3 border-t border-white/5">
+                                        <div className="p-2 bg-stone-800 rounded text-stone-400">
+                                            <CalendarClock size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Rendelés Leadva</p>
+                                            <p className="text-stone-300 text-xs font-mono">{formatDateTime(order.created_at)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 2. OSZLOP: JEGY RÉSZLETEK (Színes badge-ekkel) */}
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Vásárolt Jegyek</p>
+                                    
+                                    {/* Jegy típus kártya */}
+                                    <div className={`p-3 rounded-lg border flex items-center gap-3 ${ticketDetails.color}`}>
+                                        <Ticket size={18} />
+                                        <span className="text-xs font-bold uppercase tracking-wider">{ticketDetails.label}</span>
+                                    </div>
+
+                                    {/* Mennyiségek */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {order.quantity_adult > 0 && (
+                                            <div className="bg-white/5 p-2 rounded border border-white/5 text-center">
+                                                <span className="block text-xl font-bold text-white">{order.quantity_adult}</span>
+                                                <span className="text-[10px] text-stone-400 uppercase">Felnőtt</span>
+                                            </div>
+                                        )}
+                                        {order.quantity_reduced > 0 && (
+                                            <div className="bg-white/5 p-2 rounded border border-white/5 text-center">
+                                                <span className="block text-xl font-bold text-white">{order.quantity_reduced}</span>
+                                                <span className="text-[10px] text-stone-400 uppercase">Kedvezm.</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 3. OSZLOP: ELÉRHETŐSÉG */}
+                                <div className="space-y-4 pt-1">
+                                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Vásárló Adatai</p>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3 text-sm text-stone-300 group/link">
+                                            <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-stone-500 group-hover/link:text-[#B8860B] transition-colors">
+                                                <Mail size={14}/>
+                                            </div>
+                                            <span className="truncate">{order.customer_email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-sm text-stone-300 group/link">
+                                            <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-stone-500 group-hover/link:text-[#B8860B] transition-colors">
+                                                <Phone size={14}/> {/* JAVÍTVA: Phone ikon a $ helyett */}
+                                            </div>
+                                            <span>{order.customer_phone}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-                    ))}
+                    )})}
                     {orders.length === 0 && <div className="text-center py-20 text-stone-600">Nincs megjeleníthető rendelés.</div>}
                 </div>
             </div>
         )}
+        
+        {/* NAPTÁR FÜL (Változatlan, csak a helykitöltés miatt maradt itt) */}
         {activeTab === 'availability' && (
             <div className="anim-right max-w-4xl mx-auto">
+                {/* ... Calendar Code ... */}
                 <div className="flex justify-between items-center mb-8 bg-[#111] p-4 rounded-xl border border-white/10 shadow-lg">
                     <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-white/10 rounded-full transition text-white"><ChevronLeft size={24}/></button>
                     <h2 className="text-xl md:text-2xl font-serif font-bold text-[#B8860B] uppercase tracking-widest">{currentDate.toLocaleDateString('hu-HU', { month: 'long', year: 'numeric' })}</h2>
@@ -326,6 +456,8 @@ function AdminContent() {
             </div>
         )}
       </main>
+      
+      {/* MODAL (Változatlan) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm anim-fade">
             <div className="bg-[#111] w-full max-w-lg rounded-2xl border border-[#B8860B]/30 shadow-[0_0_50px_rgba(184,134,11,0.15)] p-6 relative anim-up">
@@ -374,8 +506,6 @@ function AdminContent() {
   );
 }
 
-// 3. EZ AZ ÚJ EXPORT! 
-// Ez becsomagolja a fenti logikát egy Suspense-be, hogy a Next.js ne panaszkodjon
 export default function AdminPage() {
   return (
     <Suspense fallback={

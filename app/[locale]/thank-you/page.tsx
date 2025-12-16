@@ -1,27 +1,30 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl'; // FORDÍTÓ IMPORT
+import { useTranslations } from 'next-intl';
 import { 
-  CheckCircle, Home, Mail, QrCode, ShieldCheck 
+  CheckCircle, Home, Mail, QrCode, ShieldCheck, Loader2
 } from 'lucide-react';
 
-// --- BIZTONSÁGOS GOOGLE ADS TRACKING ---
+// --- GOOGLE ADS TRACKING ---
+// Ez a komponens felelős azért, hogy a Google tudja: vásárlás történt!
 function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, total: string, currency: string }) {
   useEffect(() => {
+    // Csak kliens oldalon, és csak ha van valós ID
     if (typeof window !== 'undefined' && (window as any).gtag && orderId !== 'UNKNOWN') {
       
       const storageKey = `ads_tracked_${orderId}`;
       const alreadyTracked = localStorage.getItem(storageKey);
 
+      // Csak egyszer küldjük el a konverziót rendelésenként!
       if (!alreadyTracked) {
-        console.log('Firing Google Ads Conversion (First time):', orderId);
+        console.log('Firing Google Ads Conversion:', orderId);
         
         (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- SAJÁT ID IDE (FONTOS!)
+            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- NE FELEJTSD EL KICSERÉLNI A SAJÁTODRA!
             'value': parseFloat(total),
             'currency': currency,
             'transaction_id': orderId
@@ -36,19 +39,20 @@ function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, tota
 }
 
 function ThankYouContent() {
-  const t = useTranslations('ThankYou'); // Betöltjük a 'ThankYou' névteret
+  const t = useTranslations('ThankYou');
   const searchParams = useSearchParams();
+  
   const rawId = searchParams.get('orderId') || 'UNKNOWN';
   const total = searchParams.get('total') || '0';
   const currency = searchParams.get('currency') || 'EUR';
 
-  // Numerikus ID generálás
+  // Obfuszkált (rejtett) ID generálás, hogy profibbnak tűnjön (pl. #8293...)
   const numericOrderId = rawId !== 'UNKNOWN' ? (rawId.replace(/\D/g, '') + '82937102').slice(0, 8) : '--------';
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 md:p-6 font-sans text-white overflow-x-hidden bg-[#0a0a0a]">
+    <div className="min-h-[100dvh] relative flex items-center justify-center p-4 md:p-6 font-sans text-white overflow-x-hidden bg-[#0a0a0a]">
       
-      {/* 1. HÁTTÉR */}
+      {/* 1. HÁTTÉR (Optimalizált!) */}
       <div className="fixed inset-0 z-0">
         <Image 
             src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
@@ -56,13 +60,15 @@ function ThankYouContent() {
             fill
             className="object-cover opacity-40 grayscale"
             priority
+            quality={60} // Mivel elmosott/sötét, elég az alacsonyabb minőség (gyorsabb betöltés)
+            sizes="100vw" // Fontos a PageSpeed-nek
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-[#050505]/80"></div>
       </div>
 
       <GoogleAdsTracking orderId={rawId} total={total} currency={currency} />
 
-      {/* 2. ARANY RAGYOGÁS */}
+      {/* 2. ARANY RAGYOGÁS HÁTTÉREFFEKT */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 md:w-[600px] md:h-[600px] bg-[#B8860B]/20 rounded-full blur-[80px] md:blur-[100px] pointer-events-none animate-in fade-in duration-1000"></div>
 
       {/* 3. FŐ KÁRTYA */}
@@ -83,6 +89,7 @@ function ThankYouContent() {
         {/* JEGY RÉSZLETEK */}
         <div className="bg-[#161616] border-x border-b border-white/10 rounded-b-3xl p-6 md:p-8 relative shadow-2xl">
             
+            {/* Lyukasztás effekt */}
             <div className="absolute -top-3 left-0 w-full flex justify-between items-center px-4">
                 <div className="w-6 h-6 bg-[#050505] rounded-full -ml-7 border-r border-white/10"></div>
                 <div className="flex-grow border-t-2 border-dashed border-white/10 mx-2"></div>
@@ -103,7 +110,7 @@ function ThankYouContent() {
                 </div>
             </div>
 
-            {/* TIMELINE */}
+            {/* TIMELINE - MOBILON IS JÓL OLVASHATÓ */}
             <div className="space-y-5 md:space-y-6">
                 <div className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[#B8860B]">
@@ -166,7 +173,11 @@ function ThankYouContent() {
 
 export default function ThankYouPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-[#B8860B]">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-[#B8860B]">
+        <Loader2 className="animate-spin" size={40} />
+      </div>
+    }>
       <ThankYouContent />
     </Suspense>
   );

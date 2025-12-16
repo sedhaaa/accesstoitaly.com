@@ -88,44 +88,66 @@
     }
   },
   "Booking": {
-    "steps": "Schritt {step} / 4",
-    "total": "Gesamt",
-    "titles": {
-      "step1": "Tickets Wählen",
-      "step2": "Datum Wählen",
-      "step3": "Gäste",
-      "step4": "Ihre Details"
+  "steps": "Schritt {step} / 4",
+  "total": "Gesamt",
+  "titles": {
+    "step1": "Tickets wählen",
+    "step2": "Datum wählen",
+    "step3": "Gäste",
+    "step4": "Ihre Details"
+  },
+  "tickets": {
+    "lift_name": "Kombi Aufzug",
+    "lift_desc": "Dom + Terrassen (Aufzug) + Museum",
+    "lift_tag": "Beliebt",
+    "stairs_name": "Kombi Treppe",
+    "stairs_desc": "Dom + Terrassen (Treppe) + Museum",
+    "stairs_tag": "Bester Preis",
+    "duomo_name": "Dom + Museum",
+    "duomo_desc": "Nur Dom-Zugang (Keine Terrassen)"
+  },
+  "info_validity": "Tickets sind ab dem gewählten Datum 72 Stunden gültig.",
+  "calendar": {
+    "sold_out": "Ausverkauft",
+    "last_spots": "Letzte Plätze",
+    "entry_time": "Einlasszeit",
+    "selling_fast": "Schnell weg!"
+  },
+  "summary": {
+    "title": "Zusammenfassung",
+    "adult": "Erwachsene",
+    "adult_desc": "Ab 19 J.",
+    "reduced": "Ermäßigt",
+    "reduced_desc": "6-18 Jahre"
+  },
+  "form": {
+    "info": "Bitte geben Sie die Daten des <strong>Hauptreisenden</strong> ein. Die Tickets werden sofort an diese E-Mail-Adresse gesendet.",
+    "name_placeholder": "Vollständiger Name",
+    "email_placeholder": "E-Mail-Adresse",
+    "phone_placeholder": "Telefonnummer",
+    "security": "256-bit SSL Verschlüsselt",
+    "validation_name": "Bitte geben Sie Ihren vollständigen Namen ein (min. 3 Zeichen)",
+    "validation_email": "Ungültiges E-Mail-Format (z.B. name@domain.com)",
+    "validation_gmail_typo": "Meinten Sie @gmail.com?",
+    "validation_phone": "Telefonnummer ist zu kurz"
+  },
+  "buttons": {
+      "processing": "Verarbeitung...",
+      "checkout": "Zur Kasse",
+      "continue": "Weiter",
+      "to_payment": "Weiter zur Zahlung", 
+      "pay": "Bezahlen"
+  },
+  "errors": {
+      "sold_out_day": "Entschuldigung, dieser Tag ist leider ausgebucht.",
+      "sold_out_time": "Entschuldigung, die Zeit {time} ist nicht mehr verfügbar.",
+      "generic_error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut."
     },
-    "tickets": {
-      "lift_name": "Kombi Aufzug",
-      "lift_desc": "Dom + Terrassen (Aufzug) + Museum",
-      "lift_tag": "Beliebtestes",
-      "stairs_name": "Kombi Treppe",
-      "stairs_desc": "Dom + Terrassen (Treppe) + Museum",
-      "stairs_tag": "Bester Preis",
-      "duomo_name": "Dom + Museum",
-      "duomo_desc": "Nur Kathedrale (Keine Terrassen)"
-    },
-    "info_validity": "Tickets sind ab dem gewählten Datum 72 Stunden gültig.",
-    "calendar": {
-      "sold_out": "Ausverkauft",
-      "last_spots": "Letzte Plätze",
-      "entry_time": "Einlasszeit",
-      "selling_fast": "Schnell weg!"
-    },
-    "summary": {
-      "title": "Zusammenfassung",
-      "adult": "Erwachsene",
-      "adult_desc": "Ab 19 Jahren",
-      "reduced": "Ermäßigt",
-      "reduced_desc": "6-18 Jahre"
-    },
-    "form": {
-      "info": "Bitte geben Sie die Daten des <strong>Hauptreisenden</strong> ein. Tickets werden sofort an diese E-Mail gesendet.",
-      "name_placeholder": "Vollständiger Name",
-      "email_placeholder": "E-Mail-Adresse",
-      "phone_placeholder": "Telefonnummer",
-      "security": "256-Bit SSL-Verschlüsselung"
+  "footer": {
+    "instant": "Sofortige Bestätigung",
+    "cancel": "Kostenlose Stornierung bis 24 Std."
+  }
+      
     },
     "buttons": {
       "processing": "Verarbeite...",
@@ -135,8 +157,7 @@
     "footer": {
       "instant": "Sofortige Bestätigung",
       "cancel": "Kostenlose Stornierung bis 24h"
-    }
-  },
+    },
   "ThankYou": {
     "title": "Zahlung Erfolgreich",
     "subtitle": "Ihre Buchung ist bestätigt.",

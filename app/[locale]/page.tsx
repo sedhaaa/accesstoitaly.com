@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Script from 'next/script';
 import { useTranslations, useLocale } from 'next-intl';
@@ -12,10 +12,20 @@ import {
   Quote, Minus, Plus
 } from 'lucide-react';
 
-// --- ZÁSZLÓK (A jól működő SVG-k) ---
+// --- STATIKUS ELEMEK (Kiemelve a renderelésből a teljesítményért) ---
+
+const GoogleLogo = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
+
 const FLAGS: Record<string, React.ReactNode> = {
   en: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
       <path fill="#012169" d="M0 0h640v480H0z"/>
       <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
       <path fill="#C8102E" d="M424 294L640 457v23h-67L368 334 146 500H79l207-156-231-177h68l167 127L515 0h80L373 173l267 199v-78H424zM260 216L0 23v63l179 130H260z"/>
@@ -24,7 +34,7 @@ const FLAGS: Record<string, React.ReactNode> = {
     </svg>
   ),
   it: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
       <g fillRule="evenodd" strokeWidth="1pt">
         <path fill="#FFF" d="M0 0h640v480H0z"/>
         <path fill="#009246" d="M0 0h213.3v480H0z"/>
@@ -33,21 +43,21 @@ const FLAGS: Record<string, React.ReactNode> = {
     </svg>
   ),
   de: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
       <path fill="#ffce00" d="M0 320h640v160H0z"/>
       <path fill="#000" d="M0 0h640v160H0z"/>
       <path fill="#d00" d="M0 160h640v160H0z"/>
     </svg>
   ),
   fr: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
       <path fill="#FFF" d="M0 0h640v480H0z"/>
       <path fill="#002395" d="M0 0h213.3v480H0z"/>
       <path fill="#ED2939" d="M426.7 0H640v480H426.7z"/>
     </svg>
   ),
   es: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20">
+    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0">
       <path fill="#AA151B" d="M0 0h640v480H0z"/>
       <path fill="#F1BF00" d="M0 120h640v240H0z"/>
     </svg>
@@ -101,8 +111,8 @@ export default function Home() {
     }
   }, [mobileMenuOpen]);
 
-  // SEO Schema (Ezt meghagytam, mert fontos, de nem okoz vizuális hibát)
-  const jsonLd = {
+  // SEO Schema Memoized
+  const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -123,7 +133,7 @@ export default function Home() {
         }
       }
     ]
-  };
+  }), [t]);
 
   const faqs = [
     { question: t('info.faq1_q'), answer: t('info.faq1_a') },
@@ -131,15 +141,6 @@ export default function Home() {
     { question: t('info.faq3_q'), answer: t('info.faq3_a') },
     { question: t('info.faq4_q'), answer: t('info.faq4_a') }
   ];
-
-  const GoogleLogo = () => (
-    <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-    </svg>
-  );
 
   return (
     <main className="min-h-screen text-[#1a1a1a] font-sans selection:bg-[#B8860B] selection:text-white overflow-x-hidden">
@@ -334,6 +335,7 @@ export default function Home() {
                       src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/alessandro-cavestro-SXHm_cboGiI-unsplash_cmalx8.jpg" 
                       alt="Duomo Historical Detail" 
                       fill 
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover hover:scale-105 transition duration-1000"
                   />
                </div>
@@ -364,8 +366,7 @@ export default function Home() {
          </div>
       </section>
 
-      {/* --- SECRETS (ITT VOLT A HIBA) --- */}
-      {/* Visszaraktam az eredetit, kivettem a shadow-t ha az zavart, de ez a structure működött */}
+      {/* --- SECRETS --- */}
       <section className="py-16 md:py-24 px-6 md:px-12 bg-white relative z-10">
          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 md:gap-16 items-center">
             <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px]">
@@ -373,6 +374,7 @@ export default function Home() {
                   src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                   alt="Duomo Detail" 
                   fill 
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover rounded-sm shadow-xl"
                />
                <div className="absolute -bottom-6 -right-6 bg-[#1a1a1a] p-6 shadow-lg max-w-xs border-l-4 border-[#B8860B]">
@@ -422,12 +424,13 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
-                     <Image 
+                      <Image 
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-CzjWqp0UWAc-unsplash_lnqbpz.jpg" 
                         alt="Rooftop Sunset" 
                         fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover transition duration-700 group-hover:scale-105"
-                     />
+                      />
                   </div>
                   <span className="text-[#B8860B] text-[10px] font-bold uppercase tracking-[0.2em]">{t('guide.card1_badge')}</span>
                   <h4 className="font-serif text-2xl text-[#1a1a1a] mt-2 mb-3 group-hover:text-[#B8860B] transition-colors">{t('guide.card1_title')}</h4>
@@ -437,12 +440,13 @@ export default function Home() {
 
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
-                     <Image 
+                      <Image 
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-DQge-qqqzxU-unsplash_csigsf.jpg" 
                         alt="Inside the Duomo" 
                         fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover transition duration-700 group-hover:scale-105"
-                     />
+                      />
                   </div>
                   <span className="text-[#B8860B] text-[10px] font-bold uppercase tracking-[0.2em]">{t('guide.card2_badge')}</span>
                   <h4 className="font-serif text-2xl text-[#1a1a1a] mt-2 mb-3 group-hover:text-[#B8860B] transition-colors">{t('guide.card2_title')}</h4>
@@ -452,12 +456,13 @@ export default function Home() {
 
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
-                     <Image 
+                      <Image 
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                         alt="Milan Food" 
                         fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover transition duration-700 group-hover:scale-105"
-                     />
+                      />
                   </div>
                   <span className="text-[#B8860B] text-[10px] font-bold uppercase tracking-[0.2em]">{t('guide.card3_badge')}</span>
                   <h4 className="font-serif text-2xl text-[#1a1a1a] mt-2 mb-3 group-hover:text-[#B8860B] transition-colors">{t('guide.card3_title')}</h4>
@@ -596,7 +601,7 @@ export default function Home() {
              {/* Jobb oldal: Térkép */}
              <div className="lg:col-span-2 h-[400px] lg:h-full relative grayscale hover:grayscale-0 transition duration-700 order-2 lg:order-2">
                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.3414925824555!2d9.188981676645837!3d45.46421117107386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6aec34636a1%3A0xab7f4e27101a2e13!2sDuomo%20di%20Milano!5e0!3m2!1sit!2sit!4v1709823456789!5m2!1sit!2sit" 
+                    src="https://maps.google.com/maps?q=Duomo+di+Milano&t=&z=15&ie=UTF8&iwloc=&output=embed" 
                     width="100%" 
                     height="100%" 
                     style={{border:0}} 
