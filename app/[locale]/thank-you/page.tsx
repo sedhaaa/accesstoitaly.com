@@ -12,6 +12,7 @@ import {
 // --- GOOGLE ADS TRACKING ---
 function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, total: string, currency: string }) {
   useEffect(() => {
+    // Csak akkor fut, ha van window, van gtag, és valós az ID
     if (typeof window !== 'undefined' && (window as any).gtag && orderId !== 'UNKNOWN') {
       
       const storageKey = `ads_tracked_${orderId}`;
@@ -20,8 +21,9 @@ function GoogleAdsTracking({ orderId, total, currency }: { orderId: string, tota
       if (!alreadyTracked) {
         console.log('Firing Google Ads Conversion:', orderId);
         
+        // Google Ads Conversion Event
         (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- CSERÉLD LE A SAJÁTODRA!
+            'send_to': 'AW-XXXXXXXXX/YYYYYYYYYYY', // <--- NE FELEJTSD EL MAJD LECSERÉLNI!
             'value': parseFloat(total),
             'currency': currency,
             'transaction_id': orderId
@@ -43,11 +45,13 @@ function ThankYouContent() {
   const totalParam = searchParams.get('total') || '0';
   const currency = searchParams.get('currency') || 'EUR';
 
-  // JAVÍTÁS: Ár formázása 2 tizedesjegyre
+  // Ár formázása 2 tizedesjegyre
   const formattedTotal = parseFloat(totalParam).toFixed(2);
 
-  // Obfuszkált ID generálás
-  const numericOrderId = rawId !== 'UNKNOWN' ? (rawId.replace(/\D/g, '') + '82937102').slice(0, 8) : '--------';
+  // --- JAVÍTÁS: ID FORMÁZÁS ---
+  // Hogy ugyanazt lássa itt is, mint amit az emailben küldtünk (az UUID első 8 karaktere)
+  // A régi replace(/\D/g) kitörölte volna a betűket a Supabase ID-ból, ami baj.
+  const displayId = rawId !== 'UNKNOWN' ? rawId.split('-')[0].toUpperCase() : '--------';
 
   return (
     <div className="min-h-[100dvh] relative flex items-center justify-center p-4 md:p-6 font-sans text-white overflow-x-hidden bg-[#0a0a0a]">
@@ -100,7 +104,7 @@ function ThankYouContent() {
             <div className="flex justify-between items-start mb-6 md:mb-8 mt-2">
                 <div>
                     <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">{t('order_number')}</p>
-                    <p className="text-xl md:text-2xl font-mono font-bold text-[#B8860B] tracking-wider">#{numericOrderId}</p>
+                    <p className="text-xl md:text-2xl font-mono font-bold text-[#B8860B] tracking-wider">#{displayId}</p>
                 </div>
                 <div className="text-right">
                     <p className="text-[9px] md:text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">{t('total_paid')}</p>
