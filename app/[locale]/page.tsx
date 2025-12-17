@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import Image from 'next/image';
+import Image, { ImageLoaderProps } from 'next/image';
 import Script from 'next/script';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
@@ -9,13 +9,26 @@ import dynamic from 'next/dynamic';
 import { 
   Star, ChevronDown, Menu, X,
   Landmark, Award, Sun, Gem, MapPin, Train, Bus,
-  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon, ArrowRight
+  Quote, Minus, Plus, Loader2, CheckCircle, Check, X as XIcon, Home as HomeIcon, Mail, ShieldCheck, QrCode
 } from 'lucide-react';
+
+// --- CLOUDINARY LOADER (Kritikus a sebességhez!) ---
+// Ez biztosítja, hogy mobilon kis méretű képet töltsünk le
+const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
+  const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto:eco'}`];
+  // Ha abszolút URL, levágjuk a domain részt a paraméterezéshez, vagy csak beszúrjuk a transzformációt
+  if (src.includes('res.cloudinary.com')) {
+      const parts = src.split('/upload/');
+      return `${parts[0]}/upload/${params.join(',')}/${parts[1]}`;
+  }
+  return src;
+};
 
 // --- STABIL OPTIMALIZÁCIÓ: BookingWidget ---
 const BookingWidget = dynamic(() => import('../components/BookingWidget'), {
   loading: () => (
-    <div className="w-full min-h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
+    // Fix magasság a Layout Shift (CLS) elkerülése érdekében
+    <div className="w-full h-[580px] bg-[#1a1a1a] rounded-3xl flex flex-col items-center justify-center text-stone-500 border border-white/10 shadow-xl">
        <Loader2 size={32} className="animate-spin mb-3 text-[#B8860B]"/>
        <p className="text-[10px] uppercase tracking-widest font-medium opacity-70">Loading Calendar...</p>
     </div>
@@ -31,50 +44,17 @@ const TrustBadge = () => (
   </div>
 );
 
+// Optimalizált SVG-k (kisebb méret)
 const FLAGS: Record<string, React.ReactNode> = {
-  en: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
-      <path fill="#012169" d="M0 0h640v480H0z"/>
-      <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
-      <path fill="#C8102E" d="M424 294L640 457v23h-67L368 334 146 500H79l207-156-231-177h68l167 127L515 0h80L373 173l267 199v-78H424zM260 216L0 23v63l179 130H260z"/>
-      <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
-      <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
-    </svg>
-  ),
-  it: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
-      <g fillRule="evenodd" strokeWidth="1pt">
-        <path fill="#FFF" d="M0 0h640v480H0z"/>
-        <path fill="#009246" d="M0 0h213.3v480H0z"/>
-        <path fill="#ce2b37" d="M426.7 0H640v480H426.7z"/>
-      </g>
-    </svg>
-  ),
-  de: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
-      <path fill="#ffce00" d="M0 320h640v160H0z"/>
-      <path fill="#000" d="M0 0h640v160H0z"/>
-      <path fill="#d00" d="M0 160h640v160H0z"/>
-    </svg>
-  ),
-  fr: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
-      <path fill="#FFF" d="M0 0h640v480H0z"/>
-      <path fill="#002395" d="M0 0h213.3v480H0z"/>
-      <path fill="#ED2939" d="M426.7 0H640v480H426.7z"/>
-    </svg>
-  ),
-  es: (
-    <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full object-cover border border-white/20 flex-shrink-0" aria-hidden="true">
-      <path fill="#AA151B" d="M0 0h640v480H0z"/>
-      <path fill="#F1BF00" d="M0 120h640v240H0z"/>
-    </svg>
-  )
+  en: <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full border border-white/20"><path fill="#012169" d="M0 0h640v480H0z"/><path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/><path fill="#C8102E" d="M424 294L640 457v23h-67L368 334 146 500H79l207-156-231-177h68l167 127L515 0h80L373 173l267 199v-78H424zM260 216L0 23v63l179 130H260z"/><path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/><path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/></svg>,
+  it: <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full border border-white/20"><g fillRule="evenodd"><path fill="#FFF" d="M0 0h640v480H0z"/><path fill="#009246" d="M0 0h213.3v480H0z"/><path fill="#ce2b37" d="M426.7 0H640v480H426.7z"/></g></svg>,
+  de: <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full border border-white/20"><path fill="#ffce00" d="M0 320h640v160H0z"/><path fill="#000" d="M0 0h640v160H0z"/><path fill="#d00" d="M0 160h640v160H0z"/></svg>,
+  fr: <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full border border-white/20"><path fill="#FFF" d="M0 0h640v480H0z"/><path fill="#002395" d="M0 0h213.3v480H0z"/><path fill="#ED2939" d="M426.7 0H640v480H426.7z"/></svg>,
+  es: <svg viewBox="0 0 640 480" className="w-5 h-5 rounded-full border border-white/20"><path fill="#AA151B" d="M0 0h640v480H0z"/><path fill="#F1BF00" d="M0 120h640v240H0z"/></svg>
 };
 
 export default function Home() {
   const t = useTranslations('HomePage');
-  // Külön behúzzuk a comparison blokkot a gyökérből
   const tComp = useTranslations('comparison'); 
   
   const locale = useLocale();
@@ -92,7 +72,8 @@ export default function Home() {
         setLangMenuOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
+    // Passive event listener a teljesítmény javítására
+    document.addEventListener("mousedown", handleClickOutside, { passive: true });
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -140,15 +121,7 @@ export default function Home() {
           "lowPrice": "13.90",
           "highPrice": "35.90",
           "priceCurrency": "EUR",
-          "offerCount": "6",
-          "offers": [
-            { "@type": "Offer", "name": "Combo Lift - Adult", "price": "35.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Combo Lift - Reduced", "price": "19.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Combo Stairs - Adult", "price": "29.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Combo Stairs - Reduced", "price": "20.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Cathedral + Museum - Adult", "price": "21.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Cathedral + Museum - Reduced", "price": "13.90", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" }
-          ]
+          "offerCount": "6"
         }
       }
     ]
@@ -161,8 +134,8 @@ export default function Home() {
     { question: t('info.faq4_q'), answer: t('info.faq4_a') }
   ];
 
-  // CLOUDINARY TURBÓ URL
-  const HERO_IMAGE_OPTIMIZED = "https://res.cloudinary.com/dldgqjxkn/image/upload/c_limit,w_1000,q_auto,f_auto/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg";
+  // Base URL a loaderhez
+  const BASE_CLOUDINARY_URL = "https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg";
 
   return (
     <main className="min-h-screen text-[#1a1a1a] font-sans selection:bg-[#B8860B] selection:text-white overflow-x-hidden">
@@ -211,20 +184,22 @@ export default function Home() {
                     <ChevronDown size={14} className={`text-white transition-transform duration-300 ${langMenuOpen ? 'rotate-180' : 'rotate-0'}`} />
                 </button>
 
-                <div className={`absolute top-full right-0 mt-3 w-40 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 origin-top-right z-[70] ${langMenuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
-                    <div className="py-2 flex flex-col">
-                        {['en', 'it', 'de', 'fr', 'es'].map((lang) => (
-                            <button
-                                key={lang}
-                                onClick={() => switchLanguage(lang)}
-                                className={`flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-colors ${locale === lang ? 'text-[#B8860B] bg-white/5' : 'text-white/70'}`}
-                            >
-                                {FLAGS[lang]}
-                                {lang === 'en' ? 'English' : lang === 'it' ? 'Italiano' : lang === 'de' ? 'Deutsch' : lang === 'fr' ? 'Français' : 'Español'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                {langMenuOpen && (
+                  <div className="absolute top-full right-0 mt-3 w-40 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 origin-top-right z-[70]">
+                      <div className="py-2 flex flex-col">
+                          {['en', 'it', 'de', 'fr', 'es'].map((lang) => (
+                              <button
+                                  key={lang}
+                                  onClick={() => switchLanguage(lang)}
+                                  className={`flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-colors ${locale === lang ? 'text-[#B8860B] bg-white/5' : 'text-white/70'}`}
+                              >
+                                  {FLAGS[lang]}
+                                  {lang === 'en' ? 'English' : lang === 'it' ? 'Italiano' : lang === 'de' ? 'Deutsch' : lang === 'fr' ? 'Français' : 'Español'}
+                              </button>
+                          ))}
+                      </div>
+                  </div>
+                )}
             </div>
 
             <button 
@@ -272,15 +247,17 @@ export default function Home() {
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden -mt-[1px]">
         <div className="absolute inset-0 bg-[#1a1a1a]">
+          {/* OPTIMALIZÁLT HERO KÉP: unoptimized törölve, loader hozzáadva, priority bekapcsolva */}
           <Image 
-            src={HERO_IMAGE_OPTIMIZED} 
+            loader={cloudinaryLoader}
+            src={BASE_CLOUDINARY_URL} 
             alt="Duomo di Milano Facade at Sunset" 
             fill
             priority={true}
             fetchPriority="high" 
-            unoptimized={true} 
             className="object-cover"
-            sizes="100vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
+            quality={85}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/95 via-[#1a1a1a]/50 to-[#1a1a1a]/20"></div>
         </div>
@@ -312,7 +289,8 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-5 relative z-20 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md">
+            {/* Fix szélességű konténer, hogy ne ugráljon */}
+            <div className="w-full max-w-md min-h-[580px]">
                <BookingWidget />
             </div>
           </div>
@@ -323,7 +301,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- ÚJ SZEKCIÓ: TICKET COMPARISON (Fordítva) --- */}
+      {/* --- TICKET COMPARISON --- */}
       <section className="py-12 md:py-20 px-6 md:px-12 bg-white relative z-10 -mt-2">
         <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
@@ -420,6 +398,7 @@ export default function Home() {
                </div>
                <div className="relative h-[400px] md:h-[600px] rounded-t-full overflow-hidden border-8 border-[#2a2a2a]">
                   <Image 
+                      loader={cloudinaryLoader}
                       src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/alessandro-cavestro-SXHm_cboGiI-unsplash_cmalx8.jpg" 
                       alt="Duomo Historical Detail" 
                       fill 
@@ -459,6 +438,7 @@ export default function Home() {
          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 md:gap-16 items-center">
             <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px]">
                <Image 
+                  loader={cloudinaryLoader}
                   src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                   alt="Duomo Detail" 
                   fill 
@@ -513,6 +493,7 @@ export default function Home() {
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
                       <Image 
+                        loader={cloudinaryLoader}
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-CzjWqp0UWAc-unsplash_lnqbpz.jpg" 
                         alt="Rooftop Sunset" 
                         fill 
@@ -529,6 +510,7 @@ export default function Home() {
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
                       <Image 
+                        loader={cloudinaryLoader}
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/rebecca-mckenna-DQge-qqqzxU-unsplash_csigsf.jpg" 
                         alt="Inside the Duomo" 
                         fill 
@@ -545,6 +527,7 @@ export default function Home() {
                <div className="group cursor-pointer">
                   <div className="relative h-64 w-full overflow-hidden mb-6">
                       <Image 
+                        loader={cloudinaryLoader}
                         src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768475/ouael-ben-salah-0xe2FGo7Vc0-unsplash_qk8u3f.jpg" 
                         alt="Milan Food" 
                         fill 
@@ -687,29 +670,30 @@ export default function Home() {
              {/* Jobb oldal: Térkép - OPTIMALIZÁLT (Static Image + Link) */}
              <div className="lg:col-span-2 h-[400px] lg:h-full relative order-2 lg:order-2 group overflow-hidden bg-[#1a1a1a]">
                  <a 
-                    href="https://www.google.com/maps/search/?api=1&query=Duomo+di+Milano" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block w-full h-full relative"
-                    aria-label="Open location in Google Maps"
+                   href="https://www.google.com/maps/search/?api=1&query=Duomo+di+Milano" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="block w-full h-full relative"
+                   aria-label="Open location in Google Maps"
                  >
-                    {/* Placeholder Kép: quality={50} a sebességért */}
-                    <Image 
-                        src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
-                        alt="Map Location"
-                        fill
-                        className="object-cover transition duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-100 grayscale hover:grayscale-0"
-                        sizes="(max-width: 768px) 100vw, 66vw"
-                        quality={50} 
-                    />
-                    
-                    {/* Overlay gomb */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-white text-[#1a1a1a] px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform transition group-hover:scale-110">
-                            <MapPin size={20} className="text-[#B8860B]" aria-hidden="true"/>
-                            {t('location.title')} (Google Maps)
-                        </div>
-                    </div>
+                   {/* Placeholder Kép: quality={50} a sebességért */}
+                   <Image 
+                       loader={cloudinaryLoader}
+                       src="https://res.cloudinary.com/dldgqjxkn/image/upload/v1765768474/federico-di-dio-photography-yfYZKkt5nes-unsplash_lmlmtk.jpg" 
+                       alt="Map Location"
+                       fill
+                       className="object-cover transition duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-100 grayscale hover:grayscale-0"
+                       sizes="(max-width: 768px) 100vw, 66vw"
+                       quality={50} 
+                   />
+                   
+                   {/* Overlay gomb */}
+                   <div className="absolute inset-0 flex items-center justify-center">
+                       <div className="bg-white text-[#1a1a1a] px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform transition group-hover:scale-110">
+                           <MapPin size={20} className="text-[#B8860B]" aria-hidden="true"/>
+                           {t('location.title')} (Google Maps)
+                       </div>
+                   </div>
                  </a>
              </div>
          </div>
@@ -718,4 +702,3 @@ export default function Home() {
     </main>
   );
 }
- 
